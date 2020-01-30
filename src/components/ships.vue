@@ -475,8 +475,9 @@ export default {
     this.$store.dispatch("getGames");
     this.$store.dispatch("getShips", this.gp_id);
     setTimeout(this.checkIfAuthorized, 600);
-    setTimeout(this.connect, 550);
-    setTimeout(this.updateSocket, 750);
+
+    setTimeout(this.connect, 650);
+    setTimeout(this.updateSocket, 1050);
   },
   beforeDestroy() {
     if (this.stompClient) {
