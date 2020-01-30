@@ -202,12 +202,12 @@ export default {
 .pirogue_horizontal {
   background-color: rgb(201, 59, 165);
   height: 40px !important;
-  width: 180px !important;
+  width: 200px !important;
   z-index: 1 !important;
 }
 .pirogue_vertical {
   background-color: rgb(201, 59, 165);
-  height: 180px !important;
+  height: 200px !important;
   width: 40px !important;
   z-index: 1 !important;
 }
