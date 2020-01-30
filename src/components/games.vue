@@ -235,6 +235,7 @@ export default {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
       // this.socket = new SockJS(`http://localhost:8080/gs-guide-websocket`);
       this.stompClient = Stomp.over(this.socket);
+      this.$store.dispatch("getGames");
       this.stompClient.connect(
         {},
         response => {
