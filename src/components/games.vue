@@ -123,12 +123,10 @@ export default {
       setTimeout(this.updateSocket, 600);
     },
     redirect() {
-      if (this.authorized) {
-        this.$router.push({
-          name: "Game View",
-          params: { gp_id: this.newGp_id }
-        });
-      }
+      this.$router.push({
+        name: "Game View",
+        params: { gp_id: this.newGp_id }
+      });
     },
     join(data) {
       // console.log("join" + data);
