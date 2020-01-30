@@ -57,6 +57,22 @@ export default new Vuex.Store({
       if (payload == false) {
         state.person = null;
       }
+    },
+    connect() {
+      this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
+      this.stompClient = Stomp.over(this.socket);
+      this.$store.dispatch("getGames");
+      this.stompClient.connect(
+        {},
+        response => {
+          // Once the connection is established the code below will automatically run each time data is sent to the back-end.
+          this.stompClient.subscribe(`/topic/games`, action => {
+            this.$store.dispatch("getGames");
+            console.log("GAME SOCKET RUN");
+          });
+        },
+        error => console.log(error)
+      );
     }
   },
   actions: {
@@ -113,6 +129,7 @@ export default new Vuex.Store({
           if (data.status == 200) {
             dispatch("getGames");
             commit("syncLogged", true);
+            commit("connect");
           }
           console.log("Log status", getters.logged);
         })
