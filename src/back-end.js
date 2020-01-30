@@ -1,3 +1,3 @@
-const api = "https://damp-thicket-88135.herokuapp.com";
+const api = "https://calm-spire-68977.herokuapp.com";
 
 export default api;

@@ -57,37 +57,12 @@ export default new Vuex.Store({
       if (payload == false) {
         state.person = null;
       }
-    },
-
-    connect(payload) {
-      this.socket = new SockJS(`${api}/gs-guide-websocket`);
-      this.stompClient = Stomp.over(this.socket);
-      this.stompClient.connect(
-        {},
-        frame => {
-          this.connected = true;
-          // console.log("Frame:");
-          console.log(frame);
-          this.stompClient.subscribe(`/topic/${payload}`, tick => {
-            // console.log("tick received:");
-            console.log(tick);
-            let newMessage = { message: JSON.parse(tick.body).content };
-            this.messages.push(newMessage);
-            // console.log("Now the messages array is:");
-            console.log(this.messages);
-            // this.enteredText = "";
-          });
-        },
-        error => {
-          console.log(error);
-          this.connected = false;
-        }
-      );
     }
   },
   actions: {
     getGames({ commit }) {
       fetch(`${api}/api/games`, { credentials: "include" })
+        // fetch(`/api/games`, { credentials: "include" }) // use for local
         .then(data => data.json())
         .then(newData => {
           console.log("newdata ", newData);
@@ -99,6 +74,7 @@ export default new Vuex.Store({
         .catch(error => console.log(error));
     },
     getShips({ commit }, payload) {
+      // fetch(`/api/game_view/${payload}`, { credentials: "include" }) // use for local
       fetch(`${api}/api/game_view/${payload}`, { credentials: "include" })
         .then(data => {
           // console.log(data);
@@ -122,8 +98,9 @@ export default new Vuex.Store({
         email: getters.email,
         pwd: getters.password
       };
-
       fetch(`${api}/api/login`, {
+        // fetch(`api/login`, {
+        // use for local
         credentials: "include",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
@@ -139,7 +116,7 @@ export default new Vuex.Store({
           }
           console.log("Log status", getters.logged);
         })
-        // .then(newData => {})
+        .then(newData => {})
         .catch(error => {
           console.log("Request failure:2 ", error);
         });
@@ -155,6 +132,7 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       fetch(`${api}/api/logout`, { method: "POST", credentials: "include" })
+        // fetch(`/api/logout`, { method: "POST", credentials: "include" }) // use for local
         .then(data => {
           // console.log("Log out Succesful ", data);
           if (data.status == 200) {
@@ -174,6 +152,8 @@ export default new Vuex.Store({
       };
 
       fetch(`${api}/api/signup`, {
+        // fetch(`api/signup`, {
+        // use for local
         credentials: "include",
         headers: {
           "Content-Type": "application/json"
@@ -205,6 +185,8 @@ export default new Vuex.Store({
     },
     newGame({ dispatch, commit }) {
       fetch(`${api}/api/games`, {
+        // fetch(`/api/games`, {
+        // use for local
         credentials: "include",
         headers: {
           "Content-Type": "application/json"
@@ -227,6 +209,8 @@ export default new Vuex.Store({
         });
     },
     joinGame({ dispatch, commit }, payload) {
+      // fetch(`/api/game/` + payload.game_id + `/players`, {
+      // use for local
       fetch(`${api}/api/game/` + payload.game_id + `/players`, {
         credentials: "include",
         headers: {
@@ -251,8 +235,9 @@ export default new Vuex.Store({
     },
     addShips({}, payload) {
       let ourData = payload.data;
-
       fetch(`${api}/games/players/` + payload.id + `/ships`, {
+        // fetch(`/games/players/` + payload.id + `/ships`, {
+        // use for local
         credentials: "include",
         headers: {
           "Content-Type": "application/json"
@@ -275,6 +260,8 @@ export default new Vuex.Store({
     addSalvoes({}, payload) {
       let ourData = payload.data;
       // console.log(JSON.stringify(ourData));
+      // fetch(`/games/players/` + payload.id + `/salvos`, {
+      // use for local
       fetch(`${api}/games/players/` + payload.id + `/salvos`, {
         credentials: "include",
         headers: {

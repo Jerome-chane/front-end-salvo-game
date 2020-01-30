@@ -186,7 +186,7 @@ export default {
 
       this.$store.dispatch("addSalvoes", payload);
       this.updateSocket;
-      setTimeout(this.update, 100);
+      setTimeout(this.update, 400);
       this.salvoes = [];
     },
 
@@ -316,8 +316,8 @@ export default {
         data: this.shipsLocations
       };
       this.$store.dispatch("addShips", payload);
-
-      setTimeout(this.update, 200);
+      this.updateSocket();
+      setTimeout(this.update, 400);
     },
     clear() {
       this.$store.commit("reset");
@@ -430,6 +430,11 @@ export default {
           JSON.stringify(""),
           {}
         );
+        // this.stompClient.send(
+        //   `/app/${this.ships.game.game_id}`, // For Local  Use
+        //   JSON.stringify(""),
+        //   {}
+        // );
       } else {
         // if connexion is not estsblished this will connect and send the message afterwards
         this.connect;
@@ -439,21 +444,25 @@ export default {
             JSON.stringify(""),
             {}
           ),
-          150
+          650
         );
       }
     },
     connect() {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
+      // this.socket = new SockJS(`http://localhost:8080/gs-guide-websocket`);
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
         {},
         response => {
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
+          // this.stompClient.subscribe(
+          //   `${api}/topic/${this.ships.game.game_id}`,
           this.stompClient.subscribe(
             `/topic/${this.ships.game.game_id}`,
             action => {
               this.$store.dispatch("getShips", this.gp_id); // When the back end sends a response this will fetch the data
+              console.log("SOCKET RUN");
             }
           );
         },
@@ -466,7 +475,8 @@ export default {
     this.$store.dispatch("getGames");
     this.$store.dispatch("getShips", this.gp_id);
     setTimeout(this.checkIfAuthorized, 600);
-    setTimeout(this.connect, 650);
+    setTimeout(this.connect, 550);
+    setTimeout(this.updateSocket, 750);
   },
   beforeDestroy() {
     if (this.stompClient) {
