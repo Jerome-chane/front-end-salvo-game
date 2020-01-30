@@ -113,7 +113,12 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["games", "logged", "player", "authorized", "newGp_id"])
+    ...mapGetters(["games", "logged", "player", "authorized", "newGp_id"]),
+    sync() {
+      if (this.logged) {
+        this.connect;
+      }
+    }
   },
   methods: {
     newGame() {
@@ -249,7 +254,10 @@ export default {
     this.$store.dispatch("getGames");
     setTimeout(this.start, 400);
     setTimeout(this.getScores, 300);
-    setTimeout(this.connect, 600);
+    this.sync;
+    if (this.logged) {
+      setTimeout(this.connect, 100);
+    }
   }
 };
 </script>
