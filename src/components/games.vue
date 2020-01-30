@@ -103,6 +103,7 @@ import Header from "./login";
 import { mapGetters } from "vuex";
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
+import api from "../back-end";
 export default {
   components: { Header },
   props: ["gp_id"],
@@ -123,7 +124,7 @@ export default {
   methods: {
     newGame() {
       this.$store.dispatch("newGame");
-      setTimeout(this.redirect, 600);
+      setTimeout(this.redirect, 1000);
       setTimeout(this.updateSocket, 600);
     },
     redirect() {
@@ -257,7 +258,7 @@ export default {
     setTimeout(this.getScores, 300);
     this.sync;
     if (this.logged) {
-      setTimeout(this.connect, 100);
+      setTimeout(this.connect, 600);
     }
   }
 };
