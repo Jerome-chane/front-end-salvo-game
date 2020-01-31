@@ -132,7 +132,7 @@ export default new Vuex.Store({
           console.log("Log status", getters.logged);
         })
         .then(newData => {
-          commit("connect");
+          // commit("connect");
         })
         .catch(error => {
           console.log("Request failure:2 ", error);
