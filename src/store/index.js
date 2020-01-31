@@ -264,7 +264,7 @@ export default new Vuex.Store({
           console.log("Request failure: ", error);
         });
     },
-    addShips({}, state, payload) {
+    addShips({}, payload) {
       let ourData = payload.data;
       fetch(`${api}/games/players/` + payload.id + `/ships`, {
         // fetch(`/games/players/` + payload.id + `/ships`, {
@@ -283,11 +283,7 @@ export default new Vuex.Store({
         })
         .then(data => {
           console.log(data);
-          this.stompClient.send(
-            `/app/${state.ships.game.game_id}`,
-            JSON.stringify(""),
-            {}
-          );
+          console.log("ships added");
         })
         .catch(error => {
           console.log("Request failure: ", error);
