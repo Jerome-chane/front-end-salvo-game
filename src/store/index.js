@@ -125,14 +125,16 @@ export default new Vuex.Store({
         body: getBody(ourData)
       })
         .then(data => {
-          // console.log("Request response: ", data);
+          console.log("Request response: ", data);
           if (data.status == 200) {
             commit("syncLogged", true);
           }
+          data.json();
           console.log("Log status", getters.logged);
         })
         .then(newData => {
           // commit("connect");
+          console.log("newData", newData);
         })
         .catch(error => {
           console.log("Request failure:2 ", error);
