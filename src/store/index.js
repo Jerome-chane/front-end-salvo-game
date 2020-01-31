@@ -84,7 +84,23 @@ export default new Vuex.Store({
         // if connexion is not estsblished this will connect and send the message afterwards
         console.log("error, not connected");
       }
-    }
+    },
+    updateShipsSocket(state, dispatch) {
+      if (this.stompClient && this.stompClient.connected) {
+        // check if the conexion has been established
+        // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
+        console.log("STORE SHIP SOCKET UPDATE");
+      
+        this.stompClient.send(
+          `/app/${state.ships.game.game_id}`,
+          JSON.stringify(""),
+          {}
+        );
+        dispatch("getShips", this.gp_id);
+      } else {
+        // if connexion is not estsblished this will connect and send the message afterwards
+        console.log("Error socket is not connected");
+      }
   },
   actions: {
     getGames({ commit }) {
@@ -264,7 +280,7 @@ export default new Vuex.Store({
           console.log("Request failure: ", error);
         });
     },
-    addShips({}, payload) {
+    addShips({commit}, payload) {
       let ourData = payload.data;
       fetch(`${api}/games/players/` + payload.id + `/ships`, {
         // fetch(`/games/players/` + payload.id + `/ships`, {
@@ -284,12 +300,13 @@ export default new Vuex.Store({
         .then(data => {
           console.log(data);
           console.log("ships added");
+          commit("updateShipsSocket")
         })
         .catch(error => {
           console.log("Request failure: ", error);
         });
     },
-    addSalvoes({}, payload) {
+    addSalvoes({commit}, payload) {
       let ourData = payload.data;
       // console.log(JSON.stringify(ourData));
       // fetch(`/games/players/` + payload.id + `/salvos`, {
@@ -309,6 +326,7 @@ export default new Vuex.Store({
         })
         .then(data => {
           console.log(data);
+          commit("updateShipsSocket")
         })
         .catch(error => {
           console.log("Request failure: ", error);

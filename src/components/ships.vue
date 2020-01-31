@@ -185,11 +185,10 @@ export default {
       };
       this.$store.dispatch("getShips", this.gp_id);
       this.$store.dispatch("addSalvoes", payload);
-      this.updateSocket;
-      setTimeout(this.update, 400);
+      // this.updateSocket;
+      setTimeout(this.update, 1000);
       this.salvoes = [];
     },
-
     // log: e => console.log(e),
     drop(e) {
       this.localLocations = this.shipsLocations;
@@ -307,7 +306,7 @@ export default {
     },
     update() {
       this.$store.dispatch("getShips", this.gp_id);
-      this.updateSocket;
+      // this.updateSocket;
       setTimeout(this.checkIfAuthorized, 200);
     },
     placeShips() {
@@ -316,8 +315,8 @@ export default {
         data: this.shipsLocations
       };
       this.$store.dispatch("addShips", payload);
-      this.updateSocket();
-      setTimeout(this.update, 400);
+      // this.updateSocket();
+      setTimeout(this.update, 1000);
     },
     clear() {
       this.$store.commit("reset");
@@ -463,7 +462,7 @@ export default {
     this.$store.dispatch("getShips", this.gp_id);
     setTimeout(this.checkIfAuthorized, 600);
     setTimeout(this.connect, 550);
-    setTimeout(this.updateSocket, 1550);
+    // setTimeout(this.updateSocket, 1550);
   },
   beforeDestroy() {
     if (this.stompClient) {
