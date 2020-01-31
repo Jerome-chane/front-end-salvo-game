@@ -27,11 +27,11 @@ const routes = [
   //   name: "Games",
   //   component: Games
   // },
-  {
-    path: "/ships",
-    name: "Ships",
-    component: Ships
-  },
+  // {
+  //   path: "/ships",
+  //   name: "Ships",
+  //   component: Ships
+  // },
   {
     path: "/game_view/:gp_id",
     name: "Game View",
