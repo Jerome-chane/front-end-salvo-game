@@ -183,7 +183,6 @@ export default {
         id: this.gp_id,
         data: this.salvoes
       };
-
       this.$store.dispatch("addSalvoes", payload);
       this.updateSocket;
       setTimeout(this.update, 400);
@@ -309,6 +308,7 @@ export default {
       this.$store.dispatch("getShips", this.gp_id);
       this.updateSocket();
       setTimeout(this.checkIfAuthorized, 200);
+      setTimeout(this.setHits, 200);
     },
     placeShips() {
       let payload = {
