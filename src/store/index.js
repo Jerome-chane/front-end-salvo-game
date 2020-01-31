@@ -127,7 +127,6 @@ export default new Vuex.Store({
         .then(data => {
           console.log("Request response: ", data);
           if (data.status == 200) {
-            dispatch("getGames");
             commit("syncLogged", true);
             commit("connect");
           }
