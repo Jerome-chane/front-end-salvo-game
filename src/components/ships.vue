@@ -187,6 +187,7 @@ export default {
       this.updateSocket;
       setTimeout(this.update, 400);
       this.salvoes = [];
+      this.setHits();
     },
 
     // log: e => console.log(e),
@@ -353,6 +354,7 @@ export default {
       this.setSalvos();
     },
     setSalvos() {
+      this.setHits();
       for (let key in this.ships.salvoes) {
         for (let i = 0; i < this.ships.salvoes[key].locations.length; i++) {
           let id = this.ships.salvoes[key].locations[i];
