@@ -128,7 +128,7 @@ export default new Vuex.Store({
           // console.log("Request response: ", data);
           if (data.status == 200) {
             commit("syncLogged", true);
-            setTimout(commit("connect"), 300);
+            setTimeout(commit("connect"), 300);
           }
           console.log("Log status", getters.logged);
         })
