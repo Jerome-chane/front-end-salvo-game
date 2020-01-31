@@ -184,7 +184,6 @@ export default {
         data: this.salvoes
       };
       this.$store.dispatch("addSalvoes", payload);
-      this.updateSocket;
       setTimeout(this.update, 400);
       this.salvoes = [];
       this.setHits();
@@ -307,7 +306,7 @@ export default {
     },
     update() {
       this.$store.dispatch("getShips", this.gp_id);
-      this.updateSocket();
+      this.updateSocket;
       setTimeout(this.checkIfAuthorized, 200);
       setTimeout(this.setHits, 200);
     },
@@ -317,7 +316,6 @@ export default {
         data: this.shipsLocations
       };
       this.$store.dispatch("addShips", payload);
-      this.updateSocket();
       setTimeout(this.update, 400);
     },
     clear() {
@@ -477,7 +475,6 @@ export default {
     this.$store.dispatch("getGames");
     this.$store.dispatch("getShips", this.gp_id);
     setTimeout(this.checkIfAuthorized, 600);
-
     setTimeout(this.connect, 550);
     setTimeout(this.updateSocket, 1550);
   },
