@@ -135,8 +135,12 @@ export default {
       if (this.email.length >= 3 && this.pwd.length >= 2) {
         this.$store.dispatch("login");
         setTimeout(this.sync, 500);
+        setTimeout(this.connect, 700);
         event.preventDefault();
       }
+    },
+    connect() {
+      this.$store.commit("connect");
     },
     sync() {
       this.$store.dispatch("getGames");
