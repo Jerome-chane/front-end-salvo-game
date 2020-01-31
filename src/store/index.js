@@ -109,7 +109,7 @@ export default new Vuex.Store({
         .catch(error => console.log(error));
     },
 
-    login({ getters, commit, dispatch }) {
+    login({ getters, commit }) {
       let ourData = {
         email: getters.email,
         pwd: getters.password
@@ -146,6 +146,7 @@ export default new Vuex.Store({
         return body.join("&");
       }
     },
+
     logout({ commit }) {
       fetch(`${api}/api/logout`, { method: "POST", credentials: "include" })
         // fetch(`/api/logout`, { method: "POST", credentials: "include" }) // use for local

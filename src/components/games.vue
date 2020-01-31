@@ -119,7 +119,7 @@ export default {
   methods: {
     newGame() {
       this.$store.dispatch("newGame");
-      setTimeout(this.redirect, 1000);
+      setTimeout(this.redirect, 1500);
       setTimeout(this.updateSocket, 600);
     },
     redirect() {
@@ -131,7 +131,7 @@ export default {
     join(data) {
       // console.log("join" + data);
       this.$store.dispatch("joinGame", data);
-      setTimeout(this.redirect, 100);
+      setTimeout(this.redirect, 400);
     },
     goTo(game) {
       // console.log("rejoin", game);
