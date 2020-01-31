@@ -134,7 +134,8 @@ export default {
     login(event) {
       if (this.email.length >= 3 && this.pwd.length >= 2) {
         this.$store.dispatch("login");
-        this.$store.dispatch("getGames");
+        setTimeout(this.$store.dispatch("getGames"), 500);
+
         event.preventDefault();
       }
     },
