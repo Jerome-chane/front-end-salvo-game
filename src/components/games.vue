@@ -113,6 +113,12 @@ export default {
       lb: []
     };
   },
+    watch: {
+    logged:  () =>{
+      console.log("Watch RUN AND UPDATE");
+      
+      this.updateSocket
+    },
   computed: {
     ...mapGetters(["games", "logged", "player", "authorized", "newGp_id"])
     // logged() {
@@ -123,7 +129,7 @@ export default {
     newGame() {
       this.$store.dispatch("newGame");
       setTimeout(this.redirect, 2000);
-      setTimeout(this.updateSocket, 600);
+      setTimeout(this.updateSocket, 1500);
     },
     redirect() {
       this.$router.push({
@@ -253,7 +259,6 @@ export default {
     setTimeout(this.start, 400);
     setTimeout(this.getScores, 300);
     this.sync;
-
     setTimeout(this.connect, 600);
   }
 };
