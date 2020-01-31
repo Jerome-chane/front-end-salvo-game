@@ -183,7 +183,7 @@ export default {
         id: this.gp_id,
         data: this.salvoes
       };
-
+      this.$store.dispatch("getShips", this.gp_id);
       this.$store.dispatch("addSalvoes", payload);
       this.updateSocket;
       setTimeout(this.update, 400);
@@ -307,7 +307,7 @@ export default {
     },
     update() {
       this.$store.dispatch("getShips", this.gp_id);
-      this.updateSocket();
+      this.updateSocket;
       setTimeout(this.checkIfAuthorized, 200);
     },
     placeShips() {
@@ -425,27 +425,16 @@ export default {
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
         // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
+        console.log("Ship Socket update sent to server");
+        this.$store.dispatch("getShips", this.gp_id);
         this.stompClient.send(
           `/app/${this.ships.game.game_id}`,
           JSON.stringify(""),
           {}
         );
-        // this.stompClient.send(
-        //   `/app/${this.ships.game.game_id}`, // For Local  Use
-        //   JSON.stringify(""),
-        //   {}
-        // );
       } else {
         // if connexion is not estsblished this will connect and send the message afterwards
-        this.connect;
-        setTimeout(
-          this.stompClient.send(
-            `/app/${this.ships.game.game_id}`,
-            JSON.stringify(""),
-            {}
-          ),
-          650
-        );
+        console.log("Error socket is not connected");
       }
     },
     connect() {
@@ -456,8 +445,6 @@ export default {
         {},
         response => {
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
-          // this.stompClient.subscribe(
-          //   `${api}/topic/${this.ships.game.game_id}`,
           this.stompClient.subscribe(
             `/topic/${this.ships.game.game_id}`,
             action => {
@@ -475,7 +462,6 @@ export default {
     this.$store.dispatch("getGames");
     this.$store.dispatch("getShips", this.gp_id);
     setTimeout(this.checkIfAuthorized, 600);
-
     setTimeout(this.connect, 550);
     setTimeout(this.updateSocket, 1550);
   },

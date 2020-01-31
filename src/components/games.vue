@@ -126,7 +126,7 @@ export default {
     newGame() {
       this.$store.dispatch("newGame");
       setTimeout(this.redirect, 2000);
-      setTimeout(this.updateSocket, 1500);
+      // setTimeout(this.updateSocket, 1500);
     },
     redirect() {
       this.$router.push({
@@ -149,7 +149,6 @@ export default {
         }
       }
     },
-
     getScores() {
       let allPlayers = [];
       for (let key in this.games) {
@@ -215,39 +214,40 @@ export default {
       this.lb.sort((a, b) => (a.ratio < b.ratio ? 1 : -1));
 
       return this.lb;
-    },
-    updateSocket() {
-      if (this.stompClient && this.stompClient.connected) {
-        // check if the conexion has been established
-        // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
-        this.stompClient.send(`/app/games`, JSON.stringify(""), {});
-      } else {
-        // if connexion is not estsblished this will connect and send the message afterwards
-        this.connect;
-        setTimeout(
-          this.stompClient.send(`/app/games`, JSON.stringify(""), {}),
-          650
-        );
-      }
-    },
-    connect() {
-      this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
-      // this.socket = new SockJS(`http://localhost:8080/gs-guide-websocket`);
-      this.stompClient = Stomp.over(this.socket);
-      this.$store.dispatch("getGames");
-      this.stompClient.connect(
-        {},
-        response => {
-          // Once the connection is established the code below will automatically run each time data is sent to the back-end.
-          // this.stompClient.subscribe(
-          //   `${api}/topic/${this.ships.game.game_id}`,
-          this.stompClient.subscribe(`/topic/games`, action => {
-            this.$store.dispatch("getGames");
-            console.log("GAME SOCKET RUN");
-          });
-        },
-        error => console.log(error)
-      );
+      // },
+      // updateSocket() {
+      //   if (this.stompClient && this.stompClient.connected) {
+      //     // check if the conexion has been established
+      //     // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
+      //     this.stompClient.send(`/app/games`, JSON.stringify(""), {});
+      //   } else {
+      //     // if connexion is not estsblished this will connect and send the message afterwards
+      //     this.connect;
+      //     setTimeout(
+      //       this.stompClient.send(`/app/games`, JSON.stringify(""), {}),
+      //       650
+      //     );
+      //   }
+      // },
+      // connect() {
+      //   this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
+      //   // this.socket = new SockJS(`http://localhost:8080/gs-guide-websocket`);
+      //   this.stompClient = Stomp.over(this.socket);
+      //   this.$store.dispatch("getGames");
+      //   this.stompClient.connect(
+      //     {},
+      //     response => {
+      //       // Once the connection is established the code below will automatically run each time data is sent to the back-end.
+      //       // this.stompClient.subscribe(
+      //       //   `${api}/topic/${this.ships.game.game_id}`,
+      //       this.stompClient.subscribe(`/topic/games`, action => {
+      //         this.$store.dispatch("getGames");
+      //         console.log("GAME SOCKET RUN");
+      //       });
+      //     },
+      //     error => console.log(error)
+      //   );
+      // }
     }
   },
   created() {

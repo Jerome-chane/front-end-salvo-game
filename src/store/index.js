@@ -58,7 +58,7 @@ export default new Vuex.Store({
         state.person = null;
       }
     },
-    connect() {
+    connect(dispatch) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
@@ -66,11 +66,24 @@ export default new Vuex.Store({
         response => {
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
           this.stompClient.subscribe(`/topic/games`, action => {
-            console.log("GAME SOCKET RUN");
+            console.log("STORE GAME SOCKET RUN");
+            dispatch("getGames");
           });
         },
         error => console.log(error)
       );
+    },
+
+    updateGameSocket() {
+      if (this.stompClient && this.stompClient.connected) {
+        // check if the conexion has been established
+        // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
+        console.log("STORE GAME SOCKET UPDATE");
+        this.stompClient.send(`/app/games`, JSON.stringify(""), {});
+      } else {
+        // if connexion is not estsblished this will connect and send the message afterwards
+        console.log("error, not connected");
+      }
     }
   },
   actions: {
@@ -83,7 +96,6 @@ export default new Vuex.Store({
           commit("setData", newData);
           if (newData.player) {
             commit("syncLogged", true);
-            // commit("connect");
           }
         })
         .catch(error => console.log(error));
@@ -221,6 +233,7 @@ export default new Vuex.Store({
           dispatch("getGames");
           commit("setNewGp_id", newData.gp_id);
           dispatch("getShips", newData.gp_id);
+          commit("updateGameSocket");
         })
         .catch(error => {
           console.log("Request failure: ", error);
