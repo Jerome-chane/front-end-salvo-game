@@ -250,9 +250,8 @@ export default {
     setTimeout(this.start, 400);
     setTimeout(this.getScores, 300);
     this.sync;
-    if (this.logged == true) {
-      setTimeout(this.connect, 600);
-    }
+
+    setTimeout(this.connect, 600);
   }
 };
 </script>
