@@ -113,18 +113,14 @@ export default {
       lb: []
     };
   },
-  watch: {
-    logged: () => {
-      console.log("Watch RUN ");
-
-      this.updateSocket;
-    }
-  },
+  // watch: {
+  //   logged: () => {
+  //     console.log("Watch RUN ");
+  //     setTimeout(this.updateSocket, 1000);
+  //   }
+  // },
   computed: {
     ...mapGetters(["games", "logged", "player", "authorized", "newGp_id"])
-    // logged() {
-    //   this.connect;
-    // }
   },
   methods: {
     newGame() {
@@ -139,7 +135,6 @@ export default {
       });
     },
     join(data) {
-      // console.log("join" + data);
       this.$store.dispatch("joinGame", data);
       setTimeout(this.redirect, 1500);
     },
