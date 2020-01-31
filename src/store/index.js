@@ -61,7 +61,7 @@ export default new Vuex.Store({
     connect(dispatch) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
       this.stompClient = Stomp.over(this.socket);
-      this.$store.dispatch("getGames");
+      dispatch("getGames");
       this.stompClient.connect(
         {},
         response => {
@@ -125,10 +125,10 @@ export default new Vuex.Store({
         body: getBody(ourData)
       })
         .then(data => {
-          console.log("Request response: ", data);
+          // console.log("Request response: ", data);
           if (data.status == 200) {
             commit("syncLogged", true);
-            commit("connect");
+            setTimout(commit("connect"), 300);
           }
           console.log("Log status", getters.logged);
         })
