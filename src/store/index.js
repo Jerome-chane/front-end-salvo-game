@@ -58,7 +58,7 @@ export default new Vuex.Store({
         state.person = null;
       }
     },
-    connect(dispatch) {
+    connect({ dispatch }) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
       this.stompClient = Stomp.over(this.socket);
       dispatch("getGames");
