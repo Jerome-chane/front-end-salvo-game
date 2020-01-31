@@ -113,12 +113,13 @@ export default {
       lb: []
     };
   },
-    watch: {
-    logged:  () =>{
-      console.log("Watch RUN AND UPDATE");
-      
-      this.updateSocket
-    },
+  watch: {
+    logged: () => {
+      console.log("Watch RUN ");
+
+      this.updateSocket;
+    }
+  },
   computed: {
     ...mapGetters(["games", "logged", "player", "authorized", "newGp_id"])
     // logged() {
