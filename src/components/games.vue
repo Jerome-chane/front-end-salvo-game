@@ -114,10 +114,10 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["games", "logged", "player", "authorized", "newGp_id"]),
-    logged() {
-      this.connect;
-    }
+    ...mapGetters(["games", "logged", "player", "authorized", "newGp_id"])
+    // logged() {
+    //   this.connect;
+    // }
   },
   methods: {
     newGame() {
