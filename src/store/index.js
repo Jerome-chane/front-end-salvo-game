@@ -58,16 +58,16 @@ export default new Vuex.Store({
         state.person = null;
       }
     },
-    connect({ dispatch }) {
+    connect() {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
       this.stompClient = Stomp.over(this.socket);
-      dispatch("getGames");
+      this.$store.dispatch("getGames");
       this.stompClient.connect(
         {},
         response => {
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
           this.stompClient.subscribe(`/topic/games`, action => {
-            dispatch("getGames");
+            this.$store.dispatch("getGames");
             console.log("GAME SOCKET RUN");
           });
         },
