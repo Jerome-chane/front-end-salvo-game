@@ -1,8 +1,8 @@
 <template>
   <div class="header">
-    <div v-if="s">
-      <h1 v-if="player != null && logged == true">Welcome {{player.firstname}} {{player.lastname}}</h1>
-    </div>
+    <!-- <div v-if="thiss"> -->
+    <h1 v-if="player != null && logged == true">Welcome {{player.firstname}} {{player.lastname}}</h1>
+    <!-- </div> -->
     <h1 v-if="!logged && showLoginForm != true">Welcome Visitor</h1>
     <br />
     <div v-if="showLoginForm != true">
