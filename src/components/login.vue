@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div>
+    <div v-if="show">
       <h1 v-if="!logged && showLoginForm != true">Welcome Visitor</h1>
       <h1 v-if="player != null && logged == true">Welcome {{player.firstname}} {{player.lastname}}</h1>
     </div>
@@ -183,17 +183,17 @@ export default {
       get() {
         return this.$store.getters.password;
       },
-
       set(pwd) {
         this.$store.commit("syncPwd", pwd);
       }
     },
-    ...mapGetters(["logged", "player", "showLoginForm", "userAlreadyExist"])
-  },
-  watch: {
-    logged: () => {
-      setTimeout(location.reload(), 600);
-    }
+    ...mapGetters([
+      "logged",
+      "player",
+      "showLoginForm",
+      "userAlreadyExist",
+      "show"
+    ])
   }
 };
 </script>
