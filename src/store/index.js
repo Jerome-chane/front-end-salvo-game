@@ -5,7 +5,7 @@ import api from "../back-end";
 Vue.use(Vuex);
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
-import Router from "vue-router";
+import router from "./router";
 export default new Vuex.Store({
   state: {
     player: null,
@@ -61,15 +61,15 @@ export default new Vuex.Store({
       if (payload == false) {
         state.person = null;
       }
-    },
-    redirect(payload) {
-      Router.push({
-        name: "Game View",
-        params: { gp_id: payload }
-      });
     }
   },
   actions: {
+    redirect(payload) {
+      router.push({
+        name: "Game View",
+        params: { gp_id: payload }
+      });
+    },
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     connect({ dispatch }) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
@@ -282,7 +282,7 @@ export default new Vuex.Store({
           // dispatch("getGames");
           commit("setNewGp_id", newData.gp_id);
           dispatch("getShips", newData.gp_id);
-          commit("redirect", newData.gp_id); // rediect to the game view page
+          dispatch("redirect", newData.gp_id); // rediect to the game view page
         })
         .catch(error => {
           console.log("Request failure: ", error);
@@ -306,7 +306,7 @@ export default new Vuex.Store({
           console.log("Success ! ", newData);
           commit("setAuthorized", true);
           commit("setNewGp_id", newData.gp_id);
-          commit("redirect", newData.gp_id);
+          dispatch("redirect", newData.gp_id);
         })
         .catch(error => {
           console.log("Request failure: ", error);
