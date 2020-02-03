@@ -64,7 +64,6 @@ export default new Vuex.Store({
         params: { gp_id: payload }
       });
     },
-
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     connect(dispatch) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
@@ -81,7 +80,6 @@ export default new Vuex.Store({
         error => console.log(error)
       );
     },
-
     updateGameSocket() {
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
@@ -93,7 +91,6 @@ export default new Vuex.Store({
         console.log("error, not connected");
       }
     },
-
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     connectShips(store, dispatch) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
