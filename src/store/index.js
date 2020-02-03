@@ -129,8 +129,10 @@ export default new Vuex.Store({
     },
     actions: {
       getGames({ commit }) {
+        console.log("get Games Run");
         fetch(`${api}/api/games`, { credentials: "include" })
           // fetch(`/api/games`, { credentials: "include" }) // use for local
+
           .then(data => data.json())
           .then(newData => {
             console.log("newdata ", newData);
