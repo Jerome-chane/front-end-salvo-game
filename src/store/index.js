@@ -298,11 +298,11 @@ export default new Vuex.Store({
           return data.json();
         })
         .then(newData => {
-          console.log("Success ! ", newData);
+          // console.log("Success ! ", newData);
           commit("setAuthorized", true);
           commit("setNewGp_id", newData.gp_id);
           dispatch("redirect", newData.gp_id);
-          dispatch("updateShipsSocket", payload);
+          setTimeout(dispatch("updateShipsSocket", payload), 1500);
         })
         .catch(error => {
           console.log("Request failure: ", error);

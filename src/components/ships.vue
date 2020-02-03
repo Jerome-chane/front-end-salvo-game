@@ -146,25 +146,26 @@ export default {
     },
     createSalvoes(id) {
       // if () {
-      if (!this.shots.includes(id)) {
-        if (this.salvoes.includes(id)) {
-          let index = this.salvoes.indexOf(id);
-          let pos = this.salvoes[index];
-          document.getElementById(`S${pos}`).innerHTML = "";
-          document.getElementById(`S${pos}`).setAttribute("class", "blue");
-          this.salvoes.splice(index, 1);
-        } else if (this.salvoes.length < 5 && !this.salvoes.includes(id)) {
-          this.salvoes.push(id);
+      if (this.ships.status == "Shoot !") {
+        if (!this.shots.includes(id)) {
+          if (this.salvoes.includes(id)) {
+            let index = this.salvoes.indexOf(id);
+            let pos = this.salvoes[index];
+            document.getElementById(`S${pos}`).innerHTML = "";
+            document.getElementById(`S${pos}`).setAttribute("class", "blue");
+            this.salvoes.splice(index, 1);
+          } else if (this.salvoes.length < 5 && !this.salvoes.includes(id)) {
+            this.salvoes.push(id);
+          }
+          for (let i = 0; i < this.salvoes.length; i++) {
+            let id = this.salvoes[i];
+            document.getElementById(`S${id}`).innerHTML = "X";
+            document.getElementById(`S${id}`).setAttribute("class", "shot");
+          }
+        } else {
+          console.log("Shot already sent");
         }
-        for (let i = 0; i < this.salvoes.length; i++) {
-          let id = this.salvoes[i];
-          document.getElementById(`S${id}`).innerHTML = "X";
-          document.getElementById(`S${id}`).setAttribute("class", "shot");
-        }
-      } else {
-        console.log("Shot already sent");
       }
-      // }
     },
     setShots() {
       for (let i in this.ships.all_salvoes) {
@@ -302,10 +303,6 @@ export default {
     reset() {
       location.reload();
     },
-    update() {
-      this.$store.dispatch("getShips", this.gp_id);
-      setTimeout(this.checkIfAuthorized, 200);
-    },
     placeShips() {
       let payload = {
         id: this.gp_id,
@@ -402,7 +399,6 @@ export default {
             // console.log(this.ships.history[0].all_hits[hit]);
             let id = this.ships.history[0].all_hits[hit];
             document.getElementById(`S${id}`).innerHTML = "XX";
-            // '<img src="https://banner2.cleanpng.com/20180503/aye/kisspng-emoji-fire-flame-clip-art-heater-repairman-vector-5aeaf9b9beda39.0902005815253487937817.jpg">';
             document.getElementById(`S${id}`).setAttribute("class", "hit");
           }
         }
@@ -410,9 +406,12 @@ export default {
     },
     checkIfAuthorized() {
       if (this.authorized) {
-        setTimeout(this.setShips, 50);
-        setTimeout(this.setShots, 50);
-        setTimeout(this.checkSink, 50);
+        if (this.ships.ships.length != 0) {
+          setTimeout(this.setShips, 50);
+        }
+        if (this.ships.all_salvoes.length != 0) {
+          setTimeout(this.setShots, 50);
+        }
         if (this.ships.salvoes.length > 1) {
           setTimeout(this.setSalvos, 70);
         }
@@ -421,7 +420,6 @@ export default {
   },
   watch: {
     ships() {
-      console.log("SHIPS DATA UPDATED");
       this.checkIfAuthorized();
     }
   },

@@ -132,8 +132,8 @@ export default {
   watch: {
     games() {
       console.log("GAMES PAGE UPDATED");
-      setTimeout(this.start, 200);
-      setTimeout(this.getScores, 200);
+      this.getScores();
+      setTimeout(this.start(), 200);
     }
   },
   methods: {
@@ -266,10 +266,6 @@ export default {
   },
   created() {
     this.$store.dispatch("getGames");
-    console.log("PLAYER: ", this.$store.getters.player);
-
-    if (this.player != null) {
-    }
   }
 };
 </script>

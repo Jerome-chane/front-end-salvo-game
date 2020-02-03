@@ -196,6 +196,11 @@ export default {
       }
     },
     ...mapGetters(["logged", "player", "showLoginForm", "userAlreadyExist"])
+  },
+  created() {
+    if (this.logged == true) {
+      this.s = true;
+    }
   }
 };
 </script>
