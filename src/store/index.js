@@ -192,7 +192,7 @@ export default new Vuex.Store({
         })
         .then(newData => {
           commit("connect");
-          commit("getGames");
+          dispatch("getGames");
           commit("setShow", true);
         })
         .catch(error => {
