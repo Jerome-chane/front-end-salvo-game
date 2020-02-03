@@ -135,8 +135,8 @@ export default {
       if (this.email.length >= 3 && this.pwd.length >= 2) {
         this.$store.dispatch("login");
         event.preventDefault();
+        setTimeout(location.reload(), 800);
       }
-      setTimeout(location.reload(), 600);
     },
     logout() {
       this.$store.dispatch("logout");
