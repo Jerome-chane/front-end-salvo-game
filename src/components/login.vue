@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <div v-if="show">
+    <div v-if="s">
       <h1 v-if="player != null && logged == true">Welcome {{player.firstname}} {{player.lastname}}</h1>
     </div>
     <h1 v-if="!logged && showLoginForm != true">Welcome Visitor</h1>
@@ -127,10 +127,13 @@ export default {
         userName: "",
         email: "",
         password: ""
-      }
+      },
+      s: false
     };
   },
-  watch: {},
+  watch: {
+    logged: () => (this.s = true)
+  },
   methods: {
     login(event) {
       if (this.email.length >= 3 && this.pwd.length >= 2) {
