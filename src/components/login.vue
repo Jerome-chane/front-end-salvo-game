@@ -134,16 +134,8 @@ export default {
     login(event) {
       if (this.email.length >= 3 && this.pwd.length >= 2) {
         this.$store.dispatch("login");
-        setTimeout(this.sync, 1500);
-        setTimeout(this.connect, 1000);
         event.preventDefault();
       }
-    },
-    connect() {
-      this.$store.commit("connect");
-    },
-    sync() {
-      this.$store.dispatch("getGames");
     },
     logout() {
       this.$store.dispatch("logout");
@@ -197,9 +189,6 @@ export default {
       }
     },
     ...mapGetters(["logged", "player", "showLoginForm", "userAlreadyExist"])
-  },
-  created() {
-    console.log(api);
   }
 };
 </script>

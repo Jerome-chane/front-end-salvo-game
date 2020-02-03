@@ -125,18 +125,18 @@ export default {
   methods: {
     newGame() {
       this.$store.dispatch("newGame");
-      setTimeout(this.redirect, 2000);
+      // setTimeout(this.redirect, 2000);
       // setTimeout(this.updateSocket, 1500);
     },
-    redirect() {
-      this.$router.push({
-        name: "Game View",
-        params: { gp_id: this.newGp_id }
-      });
-    },
+    // redirect() {
+    //   this.$router.push({
+    //     name: "Game View",
+    //     params: { gp_id: this.newGp_id }
+    //   });
+    // },
     join(data) {
       this.$store.dispatch("joinGame", data);
-      setTimeout(this.redirect, 1500);
+      // setTimeout(this.redirect, 1500);
     },
     goTo(game) {
       // console.log("rejoin", game);
@@ -252,9 +252,8 @@ export default {
   },
   created() {
     this.$store.dispatch("getGames");
-    setTimeout(this.start, 400);
-    setTimeout(this.getScores, 300);
-    this.sync;
+    setTimeout(this.start, 1000);
+    setTimeout(this.getScores, 1000);
     // setTimeout(this.connect, 600);
   }
 };

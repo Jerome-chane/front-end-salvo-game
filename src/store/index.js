@@ -58,14 +58,22 @@ export default new Vuex.Store({
         state.person = null;
       }
     },
+    redirect(payload) {
+      this.$router.push({
+        name: "Game View",
+        params: { gp_id: payload }
+      });
+    },
+
+    //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     connect(dispatch) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address when user log in
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
         {},
-        response => {
+        () => {
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
-          this.stompClient.subscribe(`/topic/games`, action => {
+          this.stompClient.subscribe(`/topic/games`, () => {
             console.log("STORE GAME SOCKET RUN");
             dispatch("getGames");
           });
@@ -78,260 +86,279 @@ export default new Vuex.Store({
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
         // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
-        console.log("STORE GAME SOCKET UPDATE");
+        console.log("GAME SOCKET UPDATE");
         this.stompClient.send(`/app/games`, JSON.stringify(""), {});
       } else {
         // if connexion is not estsblished this will connect and send the message afterwards
         console.log("error, not connected");
       }
     },
-    updateShipsSocket(state, dispatch) {
+
+    //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
+    connectShips(store, dispatch) {
+      this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
+      // this.socket = new SockJS(`http://localhost:8080/gs-guide-websocket`);
+      this.stompClient = Stomp.over(this.socket);
+      this.stompClient.connect(
+        {},
+        () => {
+          // Once the connection is established the code below will automatically run each time data is sent to the back-end.
+          this.stompClient.subscribe(
+            `/topic/${store.ships.game.game_id}`,
+            () => {
+              dispatch("getShips", store.newGp_id); // When the back end sends a response this will fetch the data
+              console.log("SOCKET RUN");
+            }
+          );
+        },
+        error => console.log(error)
+      );
+    },
+    updateShipsSocket(payload) {
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
         // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
         console.log("STORE SHIP SOCKET UPDATE");
-      
-        this.stompClient.send(
-          `/app/${state.ships.game.game_id}`,
-          JSON.stringify(""),
-          {}
-        );
-        dispatch("getShips", this.gp_id);
+
+        this.stompClient.send(`/app/${payload}`, JSON.stringify(""), {});
       } else {
         // if connexion is not estsblished this will connect and send the message afterwards
         console.log("Error socket is not connected");
       }
-  },
-  actions: {
-    getGames({ commit }) {
-      fetch(`${api}/api/games`, { credentials: "include" })
-        // fetch(`/api/games`, { credentials: "include" }) // use for local
-        .then(data => data.json())
-        .then(newData => {
-          console.log("newdata ", newData);
-          commit("setData", newData);
-          if (newData.player) {
-            commit("syncLogged", true);
-          }
-        })
-        .catch(error => console.log(error));
+      //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     },
-    getShips({ commit }, payload) {
-      // fetch(`/api/game_view/${payload}`, { credentials: "include" }) // use for local
-      fetch(`${api}/api/game_view/${payload}`, { credentials: "include" })
-        .then(data => {
-          // console.log(data);
-          if (data.ok != true) {
-            commit("setAuthorized", false);
-            throw Error("UNAUTHORIZED ", data.status);
-          } else {
-            commit("setAuthorized", true);
-            return data.json();
+    actions: {
+      getGames({ commit }) {
+        fetch(`${api}/api/games`, { credentials: "include" })
+          // fetch(`/api/games`, { credentials: "include" }) // use for local
+          .then(data => data.json())
+          .then(newData => {
+            console.log("newdata ", newData);
+            commit("setData", newData);
+            if (newData.player) {
+              commit("syncLogged", true);
+            }
+          })
+          .catch(error => console.log(error));
+      },
+      getShips({ commit }, payload) {
+        // fetch(`/api/game_view/${payload}`, { credentials: "include" }) // use for local
+        fetch(`${api}/api/game_view/${payload}`, { credentials: "include" })
+          .then(data => {
+            // console.log(data);
+            if (data.ok != true) {
+              commit("setAuthorized", false);
+              throw Error("UNAUTHORIZED ", data.status);
+            } else {
+              commit("setAuthorized", true);
+              return data.json();
+            }
+          })
+          .then(shipData => {
+            if (!this.stompClient && !this.stompClient.connected) {
+              // if not connected, connect
+              commit("connectShips");
+            }
+            commit("setShipData", shipData); // save the fetched data in store variable
+            console.log("shipsdata", shipData);
+            // commit("updateShipsSocket", shipData.game.game_id)
+          })
+          .catch(error => console.log(error));
+      },
+      login({ dispatch, getters, commit }) {
+        let ourData = {
+          email: getters.email,
+          pwd: getters.password
+        };
+        fetch(`${api}/api/login`, {
+          // fetch(`api/login`, {
+          // use for local
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          method: "POST",
+          body: getBody(ourData)
+        })
+          .then(data => {
+            console.log("Request response: ", data);
+            if (data.status == 200) {
+              commit("syncLogged", true);
+            }
+            console.log("Log status", getters.logged);
+          })
+          .then(newData => {
+            commit("connect");
+            commit("getGames");
+          })
+          .catch(error => {
+            console.log("Request failure:2 ", error);
+          });
+        function getBody(json) {
+          var body = [];
+          for (var key in json) {
+            var encKey = encodeURIComponent(key);
+            var encVal = encodeURIComponent(json[key]);
+            body.push(encKey + "=" + encVal);
           }
-        })
-        .then(shipData => {
-          commit("setShipData", shipData);
-          console.log("shipsdata", shipData);
-        })
-        .catch(error => console.log(error));
-    },
-
-    login({ getters, commit }) {
-      let ourData = {
-        email: getters.email,
-        pwd: getters.password
-      };
-      fetch(`${api}/api/login`, {
-        // fetch(`api/login`, {
-        // use for local
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        method: "POST",
-        body: getBody(ourData)
-      })
-        .then(data => {
-          console.log("Request response: ", data);
-          if (data.status == 200) {
-            commit("syncLogged", true);
-          }
-
-          console.log("Log status", getters.logged);
-        })
-        .then(newData => {
-          // commit("connect");
-        })
-        .catch(error => {
-          console.log("Request failure:2 ", error);
-        });
-      function getBody(json) {
-        var body = [];
-        for (var key in json) {
-          var encKey = encodeURIComponent(key);
-          var encVal = encodeURIComponent(json[key]);
-          body.push(encKey + "=" + encVal);
+          return body.join("&");
         }
-        return body.join("&");
-      }
-    },
+      },
+      logout({ commit }) {
+        fetch(`${api}/api/logout`, { method: "POST", credentials: "include" })
+          // fetch(`/api/logout`, { method: "POST", credentials: "include" }) // use for local
+          .then(data => {
+            // console.log("Log out Succesful ", data);
+            if (data.status == 200) {
+              commit("syncLogged", false);
+            }
+          })
+          .catch(error => console.log("Error ", error));
+      },
+      signUp({ commit, dispatch }, payload) {
+        let ourData = {
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          userName: payload.userName,
+          email: payload.email,
+          password: payload.password
+        };
 
-    logout({ commit }) {
-      fetch(`${api}/api/logout`, { method: "POST", credentials: "include" })
-        // fetch(`/api/logout`, { method: "POST", credentials: "include" }) // use for local
-        .then(data => {
-          // console.log("Log out Succesful ", data);
-          if (data.status == 200) {
-            commit("syncLogged", false);
-          }
+        fetch(`${api}/api/signup`, {
+          // fetch(`api/signup`, {
+          // use for local
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST",
+          // body: getBody(ourData)
+          body: JSON.stringify(ourData)
         })
-        .catch(error => console.log("Error ", error));
-    },
-
-    signUp({ commit, dispatch }, payload) {
-      let ourData = {
-        firstName: payload.firstName,
-        lastName: payload.lastName,
-        userName: payload.userName,
-        email: payload.email,
-        password: payload.password
-      };
-
-      fetch(`${api}/api/signup`, {
-        // fetch(`api/signup`, {
+          .then(newData => {
+            // console.log("data sent: ", JSON.stringify(ourData));
+            return newData.json();
+          })
+          .then(data => {
+            if (data.hasOwnProperty("error")) {
+              console.log(" error: ", data);
+              commit("setUserAlreadyExist", true);
+            } else {
+              commit("setUserAlreadyExist", false);
+              commit("syncEmail", ourData.email);
+              commit("syncPwd", ourData.password);
+              commit("setLoginForm", false);
+              dispatch("login");
+              console.log(data);
+            }
+          })
+          .catch(error => {
+            console.log("Request failure: ", error);
+          });
+      },
+      newGame({ dispatch, commit }) {
+        fetch(`${api}/api/games`, {
+          // fetch(`/api/games`, {
+          // use for local
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST"
+        })
+          .then(data => {
+            if (data.hasOwnProperty("error")) {
+              throw Error("Unable to create Game " + data);
+            } else return data.json();
+          })
+          .then(newData => {
+            console.log("json response", newData);
+            commit("updateGameSocket"); // send a socket message to the back end to inform that an update was made
+            // dispatch("getGames");
+            commit("setNewGp_id", newData.gp_id);
+            dispatch("getShips", newData.gp_id);
+            commit("redirect", newData.gp_id); // rediect to the game view page
+          })
+          .catch(error => {
+            console.log("Request failure: ", error);
+          });
+      },
+      joinGame({ dispatch, commit }, payload) {
+        // fetch(`/api/game/` + payload.game_id + `/players`, {
         // use for local
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST",
-        // body: getBody(ourData)
-        body: JSON.stringify(ourData)
-      })
-        .then(newData => {
-          // console.log("data sent: ", JSON.stringify(ourData));
-          return newData.json();
+        fetch(`${api}/api/game/${payload.game_id}/players`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST"
         })
-        .then(data => {
-          if (data.hasOwnProperty("error")) {
-            console.log(" error: ", data);
-            commit("setUserAlreadyExist", true);
-          } else {
-            commit("setUserAlreadyExist", false);
-            commit("syncEmail", ourData.email);
-            commit("syncPwd", ourData.password);
-            commit("setLoginForm", false);
-            dispatch("login");
+          .then(data => {
             console.log(data);
-          }
+            return data.json();
+          })
+          .then(newData => {
+            console.log("Success ! ", newData);
+            commit("setAuthorized", true);
+            commit("setNewGp_id", newData.gp_id);
+            commit("redirect", newData.gp_id);
+          })
+          .catch(error => {
+            console.log("Request failure: ", error);
+          });
+      },
+      addShips({ commit }, payload) {
+        let ourData = payload.data;
+        fetch(`${api}/games/players/${payload.id}/ships`, {
+          // fetch(`/games/players/` + payload.id + `/ships`, {
+          // use for local
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST",
+          body: JSON.stringify(ourData)
         })
-        .catch(error => {
-          console.log("Request failure: ", error);
-        });
-    },
-    newGame({ dispatch, commit }) {
-      fetch(`${api}/api/games`, {
-        // fetch(`/api/games`, {
+          .then(newData => {
+            // console.log(newData);
+            return newData.json();
+          })
+          .then(data => {
+            console.log(data);
+            console.log("ships added");
+            commit("updateShipsSocket", payload.game_id); // update socket after ships are added
+            // dispatch("getShips", payload.id); // fetch the new ships data
+          })
+          .catch(error => {
+            console.log("Request failure: ", error);
+          });
+      },
+      addSalvoes({ commit }, payload) {
+        let ourData = payload.data;
+        // console.log(JSON.stringify(ourData));
+        // fetch(`/games/players/` + payload.id + `/salvos`, {
         // use for local
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      })
-        .then(data => {
-          if (data.hasOwnProperty("error")) {
-            throw Error("Unable to create Game " + data);
-          } else return data.json();
-        })
-        .then(newData => {
-          console.log("json response", newData);
-          dispatch("getGames");
-          commit("setNewGp_id", newData.gp_id);
-          dispatch("getShips", newData.gp_id);
-          commit("updateGameSocket");
-        })
-        .catch(error => {
-          console.log("Request failure: ", error);
-        });
-    },
-    joinGame({ dispatch, commit }, payload) {
-      // fetch(`/api/game/` + payload.game_id + `/players`, {
-      // use for local
-      fetch(`${api}/api/game/` + payload.game_id + `/players`, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      })
-        .then(data => {
-          console.log(data);
-          return data.json();
-        })
-        .then(newData => {
-          console.log(newData);
-          console.log("Success ! ", newData);
-          dispatch("getGames");
-          commit("setNewGp_id", newData.gp_id);
-          commit("setAuthorized", true);
-        })
-        .catch(error => {
-          console.log("Request failure: ", error);
-        });
-    },
-    addShips({commit}, payload) {
-      let ourData = payload.data;
-      fetch(`${api}/games/players/` + payload.id + `/ships`, {
-        // fetch(`/games/players/` + payload.id + `/ships`, {
-        // use for local
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST",
+        fetch(`${api}/games/players/${payload.id}/salvos`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST",
 
-        body: JSON.stringify(ourData)
-      })
-        .then(newData => {
-          // console.log(newData);
-          return newData.json();
+          body: JSON.stringify(ourData)
         })
-        .then(data => {
-          console.log(data);
-          console.log("ships added");
-          commit("updateShipsSocket")
-        })
-        .catch(error => {
-          console.log("Request failure: ", error);
-        });
-    },
-    addSalvoes({commit}, payload) {
-      let ourData = payload.data;
-      // console.log(JSON.stringify(ourData));
-      // fetch(`/games/players/` + payload.id + `/salvos`, {
-      // use for local
-      fetch(`${api}/games/players/` + payload.id + `/salvos`, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST",
-
-        body: JSON.stringify(ourData)
-      })
-        .then(newData => {
-          console.log(newData);
-          return newData.json();
-        })
-        .then(data => {
-          console.log(data);
-          commit("updateShipsSocket")
-        })
-        .catch(error => {
-          console.log("Request failure: ", error);
-        });
+          .then(newData => {
+            // console.log(newData);
+            return newData.json();
+          })
+          .then(data => {
+            console.log(data);
+            commit("updateShipsSocket", payload.game_id);
+          })
+          .catch(error => {
+            console.log("Request failure: ", error);
+          });
+      }
     }
-  },
-  modules: {}
+  }
 });

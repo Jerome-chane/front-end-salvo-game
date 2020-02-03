@@ -141,9 +141,6 @@ export default {
     }
   },
   methods: {
-    log() {
-      console.log(this.test.join("").length);
-    },
     goBack() {
       this.$router.push("/");
     },
@@ -181,12 +178,13 @@ export default {
     sendSalvoes() {
       let payload = {
         id: this.gp_id,
-        data: this.salvoes
+        data: this.salvoes,
+        game_id: this.ships.game.game_id
       };
-      this.$store.dispatch("getShips", this.gp_id);
+      // this.$store.dispatch("getShips", this.gp_id);
       this.$store.dispatch("addSalvoes", payload);
       // this.updateSocket;
-      setTimeout(this.update, 1000);
+      // setTimeout(this.update, 1000);
       this.salvoes = [];
     },
     // log: e => console.log(e),
@@ -306,17 +304,17 @@ export default {
     },
     update() {
       this.$store.dispatch("getShips", this.gp_id);
-      // this.updateSocket;
       setTimeout(this.checkIfAuthorized, 200);
     },
     placeShips() {
       let payload = {
         id: this.gp_id,
-        data: this.shipsLocations
+        data: this.shipsLocations,
+        game_id: this.ships.game.game_id
       };
       this.$store.dispatch("addShips", payload);
       // this.updateSocket();
-      setTimeout(this.update, 1000);
+      // setTimeout(this.update, 1000);
     },
     clear() {
       this.$store.commit("reset");
@@ -419,49 +417,34 @@ export default {
           setTimeout(this.setSalvos, 70);
         }
       } else console.log("unauthorized or error occured");
-    },
-    updateSocket() {
-      if (this.stompClient && this.stompClient.connected) {
-        // check if the conexion has been established
-        // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
-        console.log("Ship Socket update sent to server");
-        this.$store.dispatch("getShips", this.gp_id);
-        this.stompClient.send(
-          `/app/${this.ships.game.game_id}`,
-          JSON.stringify(""),
-          {}
-        );
-      } else {
-        // if connexion is not estsblished this will connect and send the message afterwards
-        console.log("Error socket is not connected");
-      }
-    },
-    connect() {
-      this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
-      // this.socket = new SockJS(`http://localhost:8080/gs-guide-websocket`);
-      this.stompClient = Stomp.over(this.socket);
-      this.stompClient.connect(
-        {},
-        response => {
-          // Once the connection is established the code below will automatically run each time data is sent to the back-end.
-          this.stompClient.subscribe(
-            `/topic/${this.ships.game.game_id}`,
-            action => {
-              this.$store.dispatch("getShips", this.gp_id); // When the back end sends a response this will fetch the data
-              console.log("SOCKET RUN");
-            }
-          );
-        },
-        error => console.log(error)
-      );
+    }
+    // updateSocket() {
+    //   if (this.stompClient && this.stompClient.connected) {
+    //     // check if the conexion has been established
+    //     // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
+    //     console.log("Ship Socket update sent to server");
+    //     this.stompClient.send(
+    //       `/app/${this.ships.game.game_id}`,
+    //       JSON.stringify(""),
+    //       {}
+    //     );
+    //   } else {
+    //     // if connexion is not estsblished this will connect and send the message afterwards
+    //     console.log("Error socket is not connected");
+    //   }
+    // },
+  },
+  watch: {
+    ships: () => {
+      console.log("SHIPS DATA UPDATED");
+      this.checkIfAuthorized();
     }
   },
   created() {
-    this.log();
-    this.$store.dispatch("getGames");
+    // this.$store.dispatch("getGames");
     this.$store.dispatch("getShips", this.gp_id);
-    setTimeout(this.checkIfAuthorized, 600);
-    setTimeout(this.connect, 550);
+    // setTimeout(this.checkIfAuthorized, 600);
+    // setTimeout(this.connect, 550);
     // setTimeout(this.updateSocket, 1550);
   },
   beforeDestroy() {

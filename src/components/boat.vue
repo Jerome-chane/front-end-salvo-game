@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      position: "vertical",
+      position: "horizontal",
       locations: [
         { type: "Destroyer", locations: [] },
         { type: "Submarine", locations: [] },
