@@ -143,12 +143,12 @@ export default new Vuex.Store({
           commit("setData", newData);
           if (newData.player != null) {
             commit("syncLogged", true);
-            dispatch("connect");
+            // dispatch("connect");
           }
         })
         .catch(error => console.log(error));
     },
-    getShips({ commit, dispatch }, payload) {
+    getShips({ commit }, payload) {
       // fetch(`/api/game_view/${payload}`, { credentials: "include" }) // use for local
       fetch(`${api}/api/game_view/${payload}`, { credentials: "include" })
         .then(data => {
@@ -165,7 +165,6 @@ export default new Vuex.Store({
           // if not connected, connect
           commit("setShipData", shipData); // save the fetched data in store variable
           console.log("shipsdata", shipData);
-          // commit("updateShipsSocket", shipData.game.game_id)
         })
         .catch(error => console.log(error));
     },
@@ -192,7 +191,7 @@ export default new Vuex.Store({
           console.log("Log status", getters.logged);
         })
         .then(newData => {
-          dispatch("connect");
+          // dispatch("connect");
           dispatch("getGames");
           commit("setShow", true);
         })

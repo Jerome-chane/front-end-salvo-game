@@ -129,6 +129,13 @@ export default {
       "ships"
     ])
   },
+  watch: {
+    games() {
+      console.log("GAMES PAGE UPDATED");
+      setTimeout(this.start, 200);
+      setTimeout(this.getScores, 200);
+    }
+  },
   methods: {
     newGame() {
       this.$store.dispatch("newGame");
@@ -259,8 +266,6 @@ export default {
   },
   created() {
     this.$store.dispatch("getGames");
-    setTimeout(this.start, 1000);
-    setTimeout(this.getScores, 1000);
   }
 };
 </script>
