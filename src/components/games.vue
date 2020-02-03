@@ -266,6 +266,10 @@ export default {
   },
   created() {
     this.$store.dispatch("getGames");
+    console.log("PLAYER: ", this.$store.getters.player);
+
+    if (this.player != null) {
+    }
   }
 };
 </script>

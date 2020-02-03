@@ -195,13 +195,7 @@ export default {
         this.$store.commit("syncPwd", pwd);
       }
     },
-    ...mapGetters([
-      "logged",
-      "player",
-      "showLoginForm",
-      "userAlreadyExist",
-      "show"
-    ])
+    ...mapGetters(["logged", "player", "showLoginForm", "userAlreadyExist"])
   }
 };
 </script>

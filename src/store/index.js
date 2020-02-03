@@ -13,7 +13,6 @@ export default new Vuex.Store({
     ships: null,
     email: "",
     pwd: "",
-    show: false,
     showLoginForm: false,
     logged: false,
     userAlreadyExist: false,
@@ -38,8 +37,7 @@ export default new Vuex.Store({
     userAlreadyExist: state => state.userAlreadyExist,
     authorized: state => state.authorized,
     newGp_id: state => state.newGp_id,
-    shipsLocations: state => state.shipsLocations,
-    show: state => state.show
+    shipsLocations: state => state.shipsLocations
   },
   mutations: {
     setShipsLocations: (state, payload) => (state.shipsLocations = payload),
@@ -47,7 +45,6 @@ export default new Vuex.Store({
       state.player = payload.player;
       state.games = payload.games;
     },
-    setShow: (state, payload) => (state.show = payload),
     setShipData: (state, payload) => (state.ships = payload),
     reset: state => (state.ships = null),
     syncEmail: (state, payload) => (state.email = payload),
@@ -191,9 +188,8 @@ export default new Vuex.Store({
           console.log("Log status", getters.logged);
         })
         .then(newData => {
-          // dispatch("connect");
+          dispatch("connect");
           dispatch("getGames");
-          commit("setShow", true);
         })
         .catch(error => {
           console.log("Request failure:2 ", error);
