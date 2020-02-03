@@ -136,6 +136,7 @@ export default {
         this.$store.dispatch("login");
         event.preventDefault();
       }
+      setTimeout(location.reload(), 600);
     },
     logout() {
       this.$store.dispatch("logout");
