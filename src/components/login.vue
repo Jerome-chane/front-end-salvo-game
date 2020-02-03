@@ -132,7 +132,9 @@ export default {
     };
   },
   watch: {
-    logged: () => (this.s = true)
+    logged() {
+      this.s = true;
+    }
   },
   methods: {
     login(event) {
