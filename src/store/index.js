@@ -143,7 +143,7 @@ export default new Vuex.Store({
           commit("setData", newData);
           if (newData.player != null) {
             commit("syncLogged", true);
-            // dispatch("connect");
+            dispatch("connect");
           }
         })
         .catch(error => console.log(error));
