@@ -5,7 +5,7 @@ import api from "../back-end";
 Vue.use(Vuex);
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
-import router from "./router";
+import router from "../router";
 export default new Vuex.Store({
   state: {
     player: null,
@@ -64,11 +64,10 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    redirect(payload) {
-      router.push({
-        name: "Game View",
-        params: { gp_id: payload }
-      });
+    redirect({}, payload) {
+      console.log(payload);
+
+      router.push("/game_view/" + payload);
     },
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     connect({ dispatch }) {
@@ -98,39 +97,42 @@ export default new Vuex.Store({
       }
     },
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
-    connectShips({ store, dispatch }) {
+    connectShips({ getters, dispatch }, payload) {
       this.socket = new SockJS(`${api}/gs-guide-websocket`); // Emits connection with the back end at the given address
       // this.socket = new SockJS(`http://localhost:8080/gs-guide-websocket`);
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
         {},
         () => {
+          console.log("SOCKET RUN");
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
           this.stompClient.subscribe(
-            `/topic/${store.ships.game.game_id}`,
+            `/topic/${getters.ships.game.game_id}`,
             () => {
-              dispatch("getShips", store.newGp_id); // When the back end sends a response this will fetch the data
-              console.log("SOCKET RUN");
+              dispatch("getShips", payload); // When the back end sends a response this will fetch the data
             }
           );
         },
         error => console.log(error)
       );
     },
-    updateShipsSocket(payload) {
+    updateShipsSocket({}, payload) {
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
         // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
         console.log("STORE SHIP SOCKET UPDATE");
-
-        this.stompClient.send(`/app/${payload}`, JSON.stringify(""), {});
+        this.stompClient.send(
+          `/app/${payload.game_id}`,
+          JSON.stringify(""),
+          {}
+        );
       } else {
         // if connexion is not estsblished this will connect and send the message afterwards
         console.log("Error socket is not connected");
       }
-      //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     },
-    getGames({ commit }) {
+    //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
+    getGames({ commit, dispatch }) {
       console.log("get Games Run");
       fetch(`${api}/api/games`, { credentials: "include" })
         // fetch(`/api/games`, { credentials: "include" }) // use for local
@@ -139,8 +141,9 @@ export default new Vuex.Store({
         .then(newData => {
           console.log("newdata ", newData);
           commit("setData", newData);
-          if (newData.player) {
+          if (newData.player != null) {
             commit("syncLogged", true);
+            dispatch("connect");
           }
         })
         .catch(error => console.log(error));
@@ -159,10 +162,7 @@ export default new Vuex.Store({
           }
         })
         .then(shipData => {
-          if (!this.stompClient && !this.stompClient.connected) {
-            // if not connected, connect
-            dispatch("connectShips");
-          }
+          // if not connected, connect
           commit("setShipData", shipData); // save the fetched data in store variable
           console.log("shipsdata", shipData);
           // commit("updateShipsSocket", shipData.game.game_id)
@@ -307,6 +307,7 @@ export default new Vuex.Store({
           commit("setAuthorized", true);
           commit("setNewGp_id", newData.gp_id);
           dispatch("redirect", newData.gp_id);
+          dispatch("updateShipsSocket", payload);
         })
         .catch(error => {
           console.log("Request failure: ", error);
@@ -331,8 +332,8 @@ export default new Vuex.Store({
         .then(data => {
           console.log(data);
           console.log("ships added");
-          dispatch("updateShipsSocket", payload.game_id); // update socket after ships are added
-          // dispatch("getShips", payload.id); // fetch the new ships data
+          dispatch("updateShipsSocket", payload); // update socket after ships are added
+          dispatch("getShips", payload.id); // fetch the new ships data
         })
         .catch(error => {
           console.log("Request failure: ", error);
@@ -358,7 +359,8 @@ export default new Vuex.Store({
         })
         .then(data => {
           console.log(data);
-          dispatch("updateShipsSocket", payload.game_id);
+          dispatch("updateShipsSocket", payload);
+          dispatch("getShips", payload.id);
         })
         .catch(error => {
           console.log("Request failure: ", error);

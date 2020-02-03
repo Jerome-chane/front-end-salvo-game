@@ -418,24 +418,9 @@ export default {
         }
       } else console.log("unauthorized or error occured");
     }
-    // updateSocket() {
-    //   if (this.stompClient && this.stompClient.connected) {
-    //     // check if the conexion has been established
-    //     // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
-    //     console.log("Ship Socket update sent to server");
-    //     this.stompClient.send(
-    //       `/app/${this.ships.game.game_id}`,
-    //       JSON.stringify(""),
-    //       {}
-    //     );
-    //   } else {
-    //     // if connexion is not estsblished this will connect and send the message afterwards
-    //     console.log("Error socket is not connected");
-    //   }
-    // },
   },
   watch: {
-    ship() {
+    ships() {
       console.log("SHIPS DATA UPDATED");
       this.checkIfAuthorized();
     }
@@ -443,7 +428,8 @@ export default {
   created() {
     // this.$store.dispatch("getGames");
     this.$store.dispatch("getShips", this.gp_id);
-    // setTimeout(this.checkIfAuthorized, 600);
+    this.$store.dispatch("connectShips", this.gp_id);
+    setTimeout(this.checkIfAuthorized, 600);
     // setTimeout(this.connect, 550);
     // setTimeout(this.updateSocket, 1550);
   },
