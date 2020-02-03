@@ -168,7 +168,7 @@ export default new Vuex.Store({
         })
         .catch(error => console.log(error));
     },
-    login({ getters, commit }) {
+    login({ getters, dispatch, commit }) {
       let ourData = {
         email: getters.email,
         pwd: getters.password

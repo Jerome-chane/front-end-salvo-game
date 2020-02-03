@@ -254,9 +254,8 @@ export default {
     this.$store.dispatch("getGames");
     setTimeout(this.start, 1000);
     setTimeout(this.getScores, 1000);
-    if (this.logged) {
-      setTimeout(this.$store.dispatch("connect"), 600);
-    }
+
+    setTimeout(this.$store.dispatch("connect"), 600);
   }
 };
 </script>
