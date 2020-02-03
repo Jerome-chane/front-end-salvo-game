@@ -435,7 +435,7 @@ export default {
     // },
   },
   watch: {
-    ships: () => {
+    ship() {
       console.log("SHIPS DATA UPDATED");
       this.checkIfAuthorized();
     }
