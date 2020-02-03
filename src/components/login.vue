@@ -130,6 +130,7 @@ export default {
       }
     };
   },
+  watch: {},
   methods: {
     login(event) {
       if (this.email.length >= 3 && this.pwd.length >= 2) {
