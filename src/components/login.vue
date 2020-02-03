@@ -135,7 +135,6 @@ export default {
       if (this.email.length >= 3 && this.pwd.length >= 2) {
         this.$store.dispatch("login");
         event.preventDefault();
-        setTimeout(location.reload(), 800);
       }
     },
     logout() {
@@ -190,6 +189,11 @@ export default {
       }
     },
     ...mapGetters(["logged", "player", "showLoginForm", "userAlreadyExist"])
+  },
+  watch: {
+    logged: () => {
+      setTimeout(location.reload(), 600);
+    }
   }
 };
 </script>
