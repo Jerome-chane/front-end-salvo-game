@@ -18,6 +18,8 @@ export default new Vuex.Store({
     userAlreadyExist: false,
     authorized: false,
     newGp_id: "",
+    gameId: null,
+
     shipsLocations: [
       { type: "Destroyer", locations: [] },
       { type: "Submarine", locations: [] },
@@ -27,6 +29,7 @@ export default new Vuex.Store({
     ]
   },
   getters: {
+    gameId: state => state.gameId,
     games: state => state.games,
     ships: state => state.ships,
     email: state => state.email,
@@ -45,6 +48,8 @@ export default new Vuex.Store({
       state.player = payload.player;
       state.games = payload.games;
     },
+
+    setGameId: (state, payload) => (state.gameId = payload),
     setShipData: (state, payload) => (state.ships = payload),
     reset: state => (state.ships = null),
     syncEmail: (state, payload) => (state.email = payload),
@@ -62,9 +67,7 @@ export default new Vuex.Store({
   },
   actions: {
     redirect({}, payload) {
-      console.log(payload);
-
-      router.push("/game_view/" + payload);
+      router.push({ name: "Game View", params: { gp_id: payload } });
     },
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
     connect({ dispatch }) {
@@ -100,17 +103,15 @@ export default new Vuex.Store({
       this.stompClient = Stomp.over(this.socket);
       this.stompClient.connect(
         {},
+
         () => {
           console.log("SOCKET RUN");
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
-          if (getters.ships != null) {
-            this.stompClient.subscribe(
-              `/topic/${getters.ships.game.game_id}`,
-              () => {
-                dispatch("getShips", payload); // When the back end sends a response this will fetch the data
-              }
-            );
-          }
+          // if (getters.ships != null) {
+          this.stompClient.subscribe(`/topic/${getters.gameId}`, () => {
+            dispatch("getShips", payload); // When the back end sends a response this will fetch the data
+          });
+          // }
         },
         error => console.log(error)
       );
@@ -131,11 +132,11 @@ export default new Vuex.Store({
       }
     },
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
+
     getGames({ commit, dispatch }) {
       console.log("get Games Run");
       fetch(`${api}/api/games`, { credentials: "include" })
         // fetch(`/api/games`, { credentials: "include" }) // use for local
-
         .then(data => data.json())
         .then(newData => {
           console.log("newdata ", newData);
@@ -147,26 +148,47 @@ export default new Vuex.Store({
         })
         .catch(error => console.log(error));
     },
+    // Original GET SHIPS then
+
+    // .then(data => {
+    //   // console.log(data);
+    //   if (data.ok != true) {
+    //     commit("setAuthorized", false);
+    //     throw Error("UNAUTHORIZED ", data.status);
+    //   } else {
+    //     commit("setAuthorized", true);
+    //     return data.json();
+    //   }
+    // })
     getShips({ commit }, payload) {
-      // fetch(`/api/game_view/${payload}`, { credentials: "include" }) // use for local
-      fetch(`${api}/api/game_view/${payload}`, { credentials: "include" })
-        .then(data => {
-          // console.log(data);
-          if (data.ok != true) {
-            commit("setAuthorized", false);
-            throw Error("UNAUTHORIZED ", data.status);
-          } else {
-            commit("setAuthorized", true);
-            return data.json();
-          }
+      return new Promise((resolve, reject) => {
+        return fetch(`${api}/api/game_view/${payload}`, {
+          credentials: "include"
         })
-        .then(shipData => {
-          // if not connected, connect
-          commit("setShipData", shipData); // save the fetched data in store variable
-          console.log("shipsdata", shipData);
-        })
-        .catch(error => console.log(error));
+          .then(data => {
+            if (data.ok) {
+              // console.log(data);
+              commit("setAuthorized", true);
+              return data.json();
+            } else {
+              commit("setAuthorized", false);
+              reject(new Error("error"));
+            }
+          })
+          .then(shipData => {
+            commit("setShipData", shipData); // save the fetched data in store variable
+            commit("setGameId", shipData.game.game_id);
+            console.log("shipsdata", shipData);
+            try {
+              return resolve({ status: "ok" });
+            } catch {
+              reject(new Error("error"));
+            }
+          })
+          .catch(error => console.log(error));
+      });
     },
+
     login({ getters, dispatch, commit }) {
       let ourData = {
         email: getters.email,
@@ -190,7 +212,6 @@ export default new Vuex.Store({
           console.log("Log status", getters.logged);
         })
         .then(newData => {
-          dispatch("connect");
           dispatch("getGames");
         })
         .catch(error => {
@@ -276,10 +297,10 @@ export default new Vuex.Store({
         .then(newData => {
           console.log("json response", newData);
           dispatch("updateGameSocket"); // send a socket message to the back end to inform that an update was made
-          // dispatch("getGames");
-          commit("setNewGp_id", newData.gp_id);
-          dispatch("getShips", newData.gp_id);
-          dispatch("redirect", newData.gp_id); // rediect to the game view page
+          commit("setNewGp_id", newData.new_game.gp_id);
+          commit("setGameId", newData.new_game.game_id);
+          dispatch("getShips", newData.new_game.gp_id);
+          dispatch("redirect", newData.new_game.gp_id); // rediect to the game view page
         })
         .catch(error => {
           console.log("Request failure: ", error);
@@ -288,29 +309,42 @@ export default new Vuex.Store({
     joinGame({ dispatch, commit }, payload) {
       // fetch(`/api/game/` + payload.game_id + `/players`, {
       // use for local
-      fetch(`${api}/api/game/${payload.game_id}/players`, {
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        method: "POST"
-      })
-        .then(data => {
-          console.log(data);
-          return data.json();
+      commit("setGameId", payload.game_id);
+      return new Promise((resolve, reject) => {
+        return fetch(`${api}/api/game/${payload.game_id}/players`, {
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          method: "POST"
         })
-        .then(newData => {
-          // console.log("Success ! ", newData);
-          commit("setAuthorized", true);
-          commit("setNewGp_id", newData.gp_id);
-          dispatch("redirect", newData.gp_id);
-          setTimeout(dispatch("updateShipsSocket", payload), 1500);
-        })
-        .catch(error => {
-          console.log("Request failure: ", error);
-        });
+          .then(data => {
+            if (data.ok) {
+              // console.log(data);
+              return data.json();
+            } else {
+              reject(new Error("error"));
+            }
+          })
+          .then(newData => {
+            // console.log("Success ! ", newData);
+            commit("setAuthorized", true);
+            commit("setNewGp_id", newData.gp_id);
+            dispatch("redirect", newData.gp_id);
+            // setTimeout(dispatch("updateShipsSocket", payload), 2000);
+            // try/catch
+            try {
+              return resolve({ game_id: payload.game_id, gp_id: newData });
+            } catch {
+              reject(new Error("error"));
+            }
+          })
+          .catch(error => {
+            console.log("Request failure: ", error);
+          });
+      });
     },
-    addShips({ commit, dispatch }, payload) {
+    addShips({ dispatch }, payload) {
       let ourData = payload.data;
       fetch(`${api}/games/players/${payload.id}/ships`, {
         // fetch(`/games/players/` + payload.id + `/ships`, {
@@ -336,7 +370,7 @@ export default new Vuex.Store({
           console.log("Request failure: ", error);
         });
     },
-    addSalvoes({ commit, dispatch }, payload) {
+    addSalvoes({ dispatch }, payload) {
       let ourData = payload.data;
       // console.log(JSON.stringify(ourData));
       // fetch(`/games/players/` + payload.id + `/salvos`, {
@@ -347,7 +381,6 @@ export default new Vuex.Store({
           "Content-Type": "application/json"
         },
         method: "POST",
-
         body: JSON.stringify(ourData)
       })
         .then(newData => {
@@ -357,7 +390,7 @@ export default new Vuex.Store({
         .then(data => {
           console.log(data);
           dispatch("updateShipsSocket", payload);
-          dispatch("getShips", payload.id);
+          // dispatch("getShips", payload.id);
         })
         .catch(error => {
           console.log("Request failure: ", error);

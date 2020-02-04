@@ -37,7 +37,19 @@
         </tr>
       </table>
       <br />
-
+      <div v-if="games.length ==0" class="lds-roller">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <br />
+      <br />
+      <p v-if="games.length ==0" class="alert alert-secondary">Please wait while the magic happen...</p>
       <div v-for="(game, index) in games" :key="index">
         <h2>Game {{game.game_id}}</h2>
 
@@ -113,12 +125,6 @@ export default {
       lb: []
     };
   },
-  // watch: {
-  //   logged: () => {
-  //     console.log("Watch RUN ");
-  //     setTimeout(this.updateSocket, 1000);
-  //   }
-  // },
   computed: {
     ...mapGetters([
       "games",
@@ -131,25 +137,28 @@ export default {
   },
   watch: {
     games() {
-      console.log("GAMES PAGE UPDATED");
-      this.getScores();
-      setTimeout(this.start(), 200);
+      if (this.scores.length == 0 && this.lb.length == 0) {
+        this.getScores();
+        setTimeout(this.start(), 200);
+      }
     }
   },
   methods: {
     newGame() {
       this.$store.dispatch("newGame");
-      // setTimeout(this.redirect, 2000);
-      // setTimeout(this.updateSocket, 1500);
     },
-    // redirect() {
-    //   this.$router.push({
-    //     name: "Game View",
-    //     params: { gp_id: this.newGp_id }
-    //   });
-    // },
+
     join(data) {
       this.$store.dispatch("joinGame", data);
+      // this.$store.dispatch("joinGame", data).then(newData => {
+      // console.log("JOIN GAME CONNECT RUN");
+      // console.log("NEW DATA SENT", newData);
+      // this.$store.dispatch("connectShips", newData);
+      // this.$store.commit("setGameId", data.game_id);
+      // this.$store.commit("setGp_id", game.gamePlayers[i].gp_id);
+      // });
+
+      //  this.$store.dispatch("connectShips", data);
       // setTimeout(this.redirect, 1500);
     },
     goTo(game) {
@@ -160,10 +169,12 @@ export default {
             name: "Game View",
             params: { gp_id: game.gamePlayers[i].gp_id }
           });
+          this.$store.commit("setGameId", game.game_id);
         }
       }
     },
     getScores() {
+      this.scores = [];
       let allPlayers = [];
       for (let key in this.games) {
         for (let player in this.games[key].gamePlayers) {
@@ -175,9 +186,9 @@ export default {
           });
         }
       }
-      let jsonObject = allPlayers.map(JSON.stringify);
-      let uniqueSet = new Set(jsonObject);
-      this.scores = Array.from(uniqueSet).map(JSON.parse);
+      let jsonObject = allPlayers.map(JSON.stringify); // loop in all the players
+      let uniqueSet = new Set(jsonObject); // create a new Set
+      this.scores = Array.from(uniqueSet).map(JSON.parse); // Add all uniquep players to the new Set
       // console.log(this.scores);
       return this.scores;
     },
@@ -270,5 +281,89 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.lds-roller {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-roller div {
+  animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  transform-origin: 40px 40px;
+}
+.lds-roller div:after {
+  content: " ";
+  display: block;
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgb(2, 1, 1);
+  margin: -4px 0 0 -4px;
+}
+.lds-roller div:nth-child(1) {
+  animation-delay: -0.036s;
+}
+.lds-roller div:nth-child(1):after {
+  top: 63px;
+  left: 63px;
+}
+.lds-roller div:nth-child(2) {
+  animation-delay: -0.072s;
+}
+.lds-roller div:nth-child(2):after {
+  top: 68px;
+  left: 56px;
+}
+.lds-roller div:nth-child(3) {
+  animation-delay: -0.108s;
+}
+.lds-roller div:nth-child(3):after {
+  top: 71px;
+  left: 48px;
+}
+.lds-roller div:nth-child(4) {
+  animation-delay: -0.144s;
+}
+.lds-roller div:nth-child(4):after {
+  top: 72px;
+  left: 40px;
+}
+.lds-roller div:nth-child(5) {
+  animation-delay: -0.18s;
+}
+.lds-roller div:nth-child(5):after {
+  top: 71px;
+  left: 32px;
+}
+.lds-roller div:nth-child(6) {
+  animation-delay: -0.216s;
+}
+.lds-roller div:nth-child(6):after {
+  top: 68px;
+  left: 24px;
+}
+.lds-roller div:nth-child(7) {
+  animation-delay: -0.252s;
+}
+.lds-roller div:nth-child(7):after {
+  top: 63px;
+  left: 17px;
+}
+.lds-roller div:nth-child(8) {
+  animation-delay: -0.288s;
+}
+.lds-roller div:nth-child(8):after {
+  top: 56px;
+  left: 12px;
+}
+@keyframes lds-roller {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 </style>

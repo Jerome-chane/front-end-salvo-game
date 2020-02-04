@@ -121,7 +121,6 @@ export default {
       ],
       salvoes: [],
       shots: [],
-      test: ["Destroyer", "Submarine", "Patrol Boat", "Pirogue", "Titanic"],
       connected: false
     };
   },
@@ -310,8 +309,6 @@ export default {
         game_id: this.ships.game.game_id
       };
       this.$store.dispatch("addShips", payload);
-      // this.updateSocket();
-      // setTimeout(this.update, 1000);
     },
     clear() {
       this.$store.commit("reset");
@@ -406,13 +403,13 @@ export default {
     },
     checkIfAuthorized() {
       if (this.authorized) {
-        if (this.ships.ships != null) {
+        if (this.ships != null) {
           setTimeout(this.setShips, 50);
         }
-        if (this.ships.all_salvoes != null) {
+        if (this.ships != null && this.ships.all_salvoes != null) {
           setTimeout(this.setShots, 50);
         }
-        if (this.ships.salvoes.length > 1) {
+        if (this.ships != null && this.ships.salvoes.length > 1) {
           setTimeout(this.setSalvos, 70);
         }
       } else console.log("unauthorized or error occured");
@@ -420,22 +417,24 @@ export default {
   },
   watch: {
     ships() {
+      // console.log("WATCH RUN");
       this.checkIfAuthorized();
     }
   },
   created() {
-    // this.$store.dispatch("getGames");
-    this.$store.dispatch("getShips", this.gp_id);
-    this.$store.dispatch("connectShips", this.gp_id);
-    setTimeout(this.checkIfAuthorized, 600);
-    // setTimeout(this.connect, 550);
-    // setTimeout(this.updateSocket, 1550);
+    this.$store.dispatch("getShips", this.gp_id).then(data => {
+      console.log("Response from GET SHIPS: ", data);
+      this.$store.dispatch("connectShips", this.gp_id);
+    });
+
+    // this.$store.dispatch("connectShips", this.gp_id);
   },
   beforeDestroy() {
     if (this.stompClient) {
       this.stompClient.disconnect();
     }
     this.connected = false;
+    this.$store.commit("setShipData", null);
   }
 };
 </script>
