@@ -103,12 +103,14 @@ export default new Vuex.Store({
         () => {
           console.log("SOCKET RUN");
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
-          this.stompClient.subscribe(
-            `/topic/${getters.ships.game.game_id}`,
-            () => {
-              dispatch("getShips", payload); // When the back end sends a response this will fetch the data
-            }
-          );
+          if (getters.ships != null) {
+            this.stompClient.subscribe(
+              `/topic/${getters.ships.game.game_id}`,
+              () => {
+                dispatch("getShips", payload); // When the back end sends a response this will fetch the data
+              }
+            );
+          }
         },
         error => console.log(error)
       );

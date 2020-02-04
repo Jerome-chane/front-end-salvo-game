@@ -406,10 +406,10 @@ export default {
     },
     checkIfAuthorized() {
       if (this.authorized) {
-        if (this.ships.ships.length != 0) {
+        if (this.ships.ships != null) {
           setTimeout(this.setShips, 50);
         }
-        if (this.ships.all_salvoes.length != 0) {
+        if (this.ships.all_salvoes != null) {
           setTimeout(this.setShots, 50);
         }
         if (this.ships.salvoes.length > 1) {
