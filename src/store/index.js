@@ -16,7 +16,7 @@ export default new Vuex.Store({
     showLoginForm: false,
     logged: false,
     userAlreadyExist: false,
-    authorized: false,
+    authorized: null,
     newGp_id: "",
     gameId: null,
 

@@ -2,12 +2,23 @@
   <div class="container">
     <!-- <h1>Battleship</h1> -->
 
-    <!-- <button @click="update" class="btn btn-success">update</button> -->
-    <!-- <button @click="reset" class="btn btn-info">reset</button> -->
-
-    <img v-if="authorized == false" src="../assets/Unauthorized.png" />
-    <!-- <h1 v-if="!authorized">BITCH</h1> -->
-
+    <div v-if="ships == null" class="container loader">
+      <div class="lds-roller">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <br />
+      <br />
+      <br />
+      <p class="alert alert-secondary">Loading the game...</p>
+      <img v-if="authorized == false" src="../assets/Unauthorized.png" />
+    </div>
     <div class="game_view" v-if="ships != null">
       <br />
 
@@ -417,7 +428,6 @@ export default {
   },
   watch: {
     ships() {
-      // console.log("WATCH RUN");
       this.checkIfAuthorized();
     }
   },
@@ -440,6 +450,9 @@ export default {
 </script>
 
 <style>
+.loader {
+  margin-top: 20%;
+}
 .sink {
   text-decoration: line-through;
 }
