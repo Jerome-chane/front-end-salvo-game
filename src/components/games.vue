@@ -57,36 +57,31 @@
             <tr>
               <th>Game</th>
               <th>Players</th>
-              <th></th>
+              <th>Status</th>
             </tr>
           </thead>
           <tr v-for="(game, index) in games" :key="index">
             <td>Game {{game.game_id}}</td>
-
             <td>
               <span v-for="(gp, index) in game.gamePlayers" :key="index">
-                <!-- <span>ID: {{gp.gp_id}}</span> -->
-
                 <span>
                   {{gp.player.firstName}} {{gp.player.lastName}}
                   <br />
                 </span>
-                <!-- <p>{{gp.player.userName}}</p> -->
               </span>
               <br />
             </td>
             <td>
-              <span v-if="game.status">{{game.status}}</span>
+              <p v-if="game.status && game.gamePlayers.length !=0">{{game.status}}</p>
               <button
                 v-if="game.gamePlayers.length ==0 && logged"
                 @click="join(game)"
                 class="btn btn-warning"
               >Join</button>
-
               <span v-if="player">
                 <span v-for="(item, index) in game.players_ids" :key="index">
                   <span
-                    v-if="logged && player.id == item && !game.status"
+                    v-if=" logged && player.id == item && game.status != 'You Lost!' "
                     class="btn btn-info"
                     @click="goTo(game)"
                   >Re-join</span>
