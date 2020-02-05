@@ -89,7 +89,7 @@
                     >View</span>
 
                     <span
-                      v-if=" game.status == 'Shoot!' || game.status == 'Place your Ships' || game.status == 'Waiting for player to join..' || game.status == 'Waiting for Opponent to Place ships..' ||game.status ==  'Waiting for opponent salvoes..' "
+                      v-if=" game.status == 'Shoot !' || game.status == 'Place your Ships' || game.status == 'Waiting for player to join..' || game.status == 'Waiting for Opponent to Place ships..' ||game.status ==  'Waiting for opponent salvoes..'"
                       class="btn btn-info"
                       @click="goTo(game)"
                     >Re-join</span>

@@ -32,7 +32,7 @@
       <button class="btn btn-info" @click="goBack">Go back</button>
 
       <h1>{{ships.status}}</h1>
-      <p v-if="ships.history">Turn: {{turn}}</p>
+      <p v-if="turn !=0">Turn: {{turn}}</p>
       <div class="row">
         <div class="col-5">
           <div class="ships">
