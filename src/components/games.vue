@@ -99,62 +99,6 @@
           </tr>
         </table>
       </div>
-      <!-- 
-      <div v-for="(game, index) in games" :key="index">
-        <h2>Game {{game.game_id}}</h2>
-        <button
-          v-if="game.gamePlayers.length ==0 && logged"
-          @click="join(game)"
-          class="btn btn-warning"
-        >Join</button>
-
-        <div v-if="player">
-          <div v-for="(item, index) in game.players_ids" :key="index">
-            <span
-              v-if="logged && player.id == item"
-              class="btn btn-info"
-              @click="goTo(game)"
-            >Re-join</span>
-            <button
-              v-if="game.gamePlayers.length <2 && logged && player.id != item"
-              @click="join(game)"
-              class="btn btn-warning"
-            >Join</button>
-          </div>
-        </div>
-
-        <br />
-        <span>Created:</span>
-        {{game.created}}
-        <br />
-        <br />
-
-        <h4>Lobby:</h4>
-
-        <div>
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>Game Player Id</th>
-                <th>Name</th>
-                <th>Username</th>
-      <th>Email</th>
-      </tr>
-      
-              <tr v-for="(gp, index) in game.gamePlayers" :key="index">
-                <td>{{gp.gp_id}}</td>
-                <td>{{gp.player.firstName}} {{gp.player.lastName}}</td>
-      <td>{{gp.player.userName}}</td>-->
-      <!-- <td>{{gp.player.email}}</td> -->
-      <!-- </tr>
-            </thead>
-          </table>
-      </div>-->
-
-      <!-- <br />
-        <br />
-        <hr />
-      </div>-->
     </div>
   </div>
 </template>
@@ -190,6 +134,13 @@ export default {
         this.getScores();
         setTimeout(this.start(), 200);
       }
+    },
+    logged() {
+      if (this.logged == true) {
+        console.log("GAMES WATCH CONNECT SOCKET");
+
+        this.$store.dispatch("connect");
+      }
     }
   },
   methods: {
@@ -199,16 +150,6 @@ export default {
 
     join(data) {
       this.$store.dispatch("joinGame", data);
-      // this.$store.dispatch("joinGame", data).then(newData => {
-      // console.log("JOIN GAME CONNECT RUN");
-      // console.log("NEW DATA SENT", newData);
-      // this.$store.dispatch("connectShips", newData);
-      // this.$store.commit("setGameId", data.game_id);
-      // this.$store.commit("setGp_id", game.gamePlayers[i].gp_id);
-      // });
-
-      //  this.$store.dispatch("connectShips", data);
-      // setTimeout(this.redirect, 1500);
     },
     goTo(game) {
       // console.log("rejoin", game);

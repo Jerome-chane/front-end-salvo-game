@@ -143,7 +143,7 @@ export default new Vuex.Store({
           commit("setData", newData);
           if (newData.player != null) {
             commit("syncLogged", true);
-            dispatch("connect");
+            // dispatch("connect");
           }
         })
         .catch(error => console.log(error));
@@ -188,7 +188,6 @@ export default new Vuex.Store({
           .catch(error => console.log(error));
       });
     },
-
     login({ getters, dispatch, commit }) {
       let ourData = {
         email: getters.email,
@@ -299,7 +298,7 @@ export default new Vuex.Store({
           dispatch("updateGameSocket"); // send a socket message to the back end to inform that an update was made
           commit("setNewGp_id", newData.new_game.gp_id);
           commit("setGameId", newData.new_game.game_id);
-          dispatch("getShips", newData.new_game.gp_id);
+          // dispatch("getShips", newData.new_game.gp_id);
           dispatch("redirect", newData.new_game.gp_id); // rediect to the game view page
         })
         .catch(error => {
