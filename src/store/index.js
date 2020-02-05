@@ -331,7 +331,6 @@ export default new Vuex.Store({
             commit("setAuthorized", true);
             commit("setNewGp_id", newData.gp_id);
             dispatch("redirect", newData.gp_id);
-            // setTimeout(dispatch("updateShipsSocket", payload), 2000);
             // try/catch
             try {
               return resolve({ game_id: payload.game_id, gp_id: newData });

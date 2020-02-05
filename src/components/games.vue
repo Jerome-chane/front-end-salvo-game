@@ -57,10 +57,24 @@
             <tr>
               <th>Game</th>
               <th>Players</th>
-              <!-- <th>Action</th> -->
+              <th></th>
             </tr>
           </thead>
           <tr v-for="(game, index) in games" :key="index">
+            <td>Game {{game.game_id}}</td>
+
+            <td>
+              <span v-for="(gp, index) in game.gamePlayers" :key="index">
+                <!-- <span>ID: {{gp.gp_id}}</span> -->
+
+                <span>
+                  {{gp.player.firstName}} {{gp.player.lastName}}
+                  <br />
+                </span>
+                <!-- <p>{{gp.player.userName}}</p> -->
+              </span>
+              <br />
+            </td>
             <td>
               <button
                 v-if="game.gamePlayers.length ==0 && logged"
@@ -81,24 +95,7 @@
                   >Join</button>
                 </span>
               </span>
-              Game {{game.game_id}}
             </td>
-
-            <td>
-              <span v-for="(gp, index) in game.gamePlayers" :key="index">
-                <!-- <span>ID: {{gp.gp_id}}</span> -->
-
-                <span>
-                  {{gp.player.firstName}} {{gp.player.lastName}}
-                  <br />
-                </span>
-                <!-- <p>{{gp.player.userName}}</p> -->
-              </span>
-              <br />
-            </td>
-            <!-- <td>
-          
-            </td>-->
           </tr>
         </table>
       </div>
