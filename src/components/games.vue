@@ -76,11 +76,13 @@
               <br />
             </td>
             <td>
+              <span v-if="game.status">{{game.status}}</span>
               <button
                 v-if="game.gamePlayers.length ==0 && logged"
                 @click="join(game)"
                 class="btn btn-warning"
               >Join</button>
+
               <span v-if="player">
                 <span v-for="(item, index) in game.players_ids" :key="index">
                   <span
@@ -88,7 +90,7 @@
                     class="btn btn-info"
                     @click="goTo(game)"
                   >Re-join</span>
-                  <span v-if="game.status">Game Over</span>
+
                   <button
                     v-if="game.gamePlayers.length <2 && logged && player.id != item"
                     @click="join(game)"
