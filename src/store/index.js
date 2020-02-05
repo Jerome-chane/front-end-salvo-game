@@ -205,7 +205,7 @@ export default new Vuex.Store({
         body: getBody(ourData)
       })
         .then(data => {
-          console.log("Request response: ", data);
+          // console.log("Request response: ", data);
           if (data.status == 200) {
             commit("syncLogged", true);
           }

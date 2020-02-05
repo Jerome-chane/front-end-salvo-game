@@ -51,52 +51,57 @@
       <p v-if="games.length ==0" class="alert alert-secondary">Please wait while the magic happen...</p>
       <br />
       <br />
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Game</th>
-            <th>Players</th>
-            <th>Action</th>
+      <div class="container2">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Game</th>
+              <th>Players</th>
+              <!-- <th>Action</th> -->
+            </tr>
+          </thead>
+          <tr v-for="(game, index) in games" :key="index">
+            <td>
+              <button
+                v-if="game.gamePlayers.length ==0 && logged"
+                @click="join(game)"
+                class="btn btn-warning"
+              >Join</button>
+              <span v-if="player">
+                <span v-for="(item, index) in game.players_ids" :key="index">
+                  <span
+                    v-if="logged && player.id == item"
+                    class="btn btn-info"
+                    @click="goTo(game)"
+                  >Re-join</span>
+                  <button
+                    v-if="game.gamePlayers.length <2 && logged && player.id != item"
+                    @click="join(game)"
+                    class="btn btn-warning"
+                  >Join</button>
+                </span>
+              </span>
+              Game {{game.game_id}}
+            </td>
+
+            <td>
+              <span v-for="(gp, index) in game.gamePlayers" :key="index">
+                <!-- <span>ID: {{gp.gp_id}}</span> -->
+
+                <span>
+                  {{gp.player.firstName}} {{gp.player.lastName}}
+                  <br />
+                </span>
+                <!-- <p>{{gp.player.userName}}</p> -->
+              </span>
+              <br />
+            </td>
+            <!-- <td>
+          
+            </td>-->
           </tr>
-        </thead>
-        <tr v-for="(game, index) in games" :key="index">
-          <td>Game {{game.game_id}}</td>
-
-          <td>
-            <span v-for="(gp, index) in game.gamePlayers" :key="index">
-              <!-- <span>ID: {{gp.gp_id}}</span> -->
-
-              <span>
-                {{gp.player.firstName}} {{gp.player.lastName}}
-                <br />
-              </span>
-              <!-- <p>{{gp.player.userName}}</p> -->
-            </span>
-            <br />
-          </td>
-          <td>
-            <button
-              v-if="game.gamePlayers.length ==0 && logged"
-              @click="join(game)"
-              class="btn btn-warning"
-            >Join</button>
-            <span v-if="player">
-              <span v-for="(item, index) in game.players_ids" :key="index">
-                <span
-                  v-if="logged && player.id == item"
-                  class="btn btn-info"
-                  @click="goTo(game)"
-                >Re-join</span>
-                <button
-                  v-if="game.gamePlayers.length <2 && logged && player.id != item"
-                  @click="join(game)"
-                  class="btn btn-warning"
-                >Join</button>
-              </span>
-            </span>
-          </td>
-        </tr>
-      </table>
+        </table>
+      </div>
       <!-- 
       <div v-for="(game, index) in games" :key="index">
         <h2>Game {{game.game_id}}</h2>
@@ -329,6 +334,10 @@ export default {
 </script>
 
 <style>
+.container2 {
+  margin-left: 7%;
+  margin-right: 7%;
+}
 .lds-roller {
   display: inline-block;
   position: relative;

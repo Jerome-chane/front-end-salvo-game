@@ -174,7 +174,7 @@ export default {
       }
     },
     signup() {
-      console.log(this.user);
+      // console.log(this.user);
       this.$store.dispatch("signUp", this.user);
     }
   },
