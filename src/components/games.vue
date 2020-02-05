@@ -80,11 +80,19 @@
               >Join</button>
               <span v-if="player">
                 <span v-for="(item, index) in game.players_ids" :key="index">
-                  <span
-                    v-if=" logged && player.id == item && game.status != 'You Lost!' "
-                    class="btn btn-info"
-                    @click="goTo(game)"
-                  >Re-join</span>
+                  <span v-if=" logged && player.id == item">
+                    <span
+                      v-if=" game.status == 'Victory!' || game.status == 'You Lost!' || game.status == 'Draw!'"
+                      class="btn btn-success"
+                      @click="goTo(game)"
+                    >View</span>
+
+                    <span
+                      v-if=" game.status == 'Shoot!' || game.status == 'Place your Ships' || game.status == 'Waiting for player to join..' || game.status == 'Waiting for Opponent to Place ships..' "
+                      class="btn btn-info"
+                      @click="goTo(game)"
+                    >Re-join</span>
+                  </span>
 
                   <button
                     v-if="game.gamePlayers.length <2 && logged && player.id != item"

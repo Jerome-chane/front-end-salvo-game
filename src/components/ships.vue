@@ -30,8 +30,9 @@
         </span>
       </h6>
       <button class="btn btn-info" @click="goBack">Go back</button>
-      <h1>{{ships.status}}</h1>
 
+      <h1>{{ships.status}}</h1>
+      <p v-if="ships.history">Turn: {{turn}}</p>
       <div class="row">
         <div class="col-5">
           <div class="ships">
@@ -132,7 +133,8 @@ export default {
       ],
       salvoes: [],
       shots: [],
-      connected: false
+      connected: false,
+      turn: 0
     };
   },
   computed: {
@@ -429,6 +431,9 @@ export default {
   watch: {
     ships() {
       this.checkIfAuthorized();
+      if (this.ships.history) {
+        this.turn = this.ships.history.length;
+      }
     }
   },
   created() {

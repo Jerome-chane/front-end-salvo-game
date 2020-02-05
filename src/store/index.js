@@ -226,14 +226,23 @@ export default new Vuex.Store({
         return body.join("&");
       }
     },
-    logout({ commit }) {
-      fetch(`${api}/api/logout`, { method: "POST", credentials: "include" })
+    logout({ commit, dispatch }) {
+      fetch(`${api}/api/logout`, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        method: "POST",
+        credentials: "include"
+      })
         // fetch(`/api/logout`, { method: "POST", credentials: "include" }) // use for local
         .then(data => {
-          // console.log("Log out Succesful ", data);
+          // console.log("Log out Run", data);
           if (data.status == 200) {
             commit("syncLogged", false);
           }
+        })
+        .then(() => {
+          dispatch("getGames");
         })
         .catch(error => console.log("Error ", error));
     },
