@@ -7,36 +7,37 @@
     <br />
 
     <div>
-      <h2>Scores</h2>
+      <div v-if="games.length >0">
+        <h2>Scores</h2>
 
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>Rank</th>
-            <th>Player</th>
-            <th>Total Score</th>
-            <th>Total Games</th>
-            <th>Wins</th>
-            <th>Losses</th>
-            <th>Ties</th>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Player</th>
+              <th>Total Score</th>
+              <th>Total Games</th>
+              <th>Wins</th>
+              <th>Losses</th>
+              <th>Ties</th>
+            </tr>
+          </thead>
+          <tr v-for="(score, index) in this.lb" :key="index">
+            <td>
+              <b>{{index+1}}</b>
+            </td>
+            <td>
+              {{score.player}}
+              <b>{{score.pseudo}}</b>
+            </td>
+            <td>{{score.total_score}}</td>
+            <td>{{score.total_games}}</td>
+            <td>{{score.wins}}</td>
+            <td>{{score.losses}}</td>
+            <td>{{score.ties}}</td>
           </tr>
-        </thead>
-        <tr v-for="(score, index) in this.lb" :key="index">
-          <td>
-            <b>{{index+1}}</b>
-          </td>
-          <td>
-            {{score.player}}
-            <b>{{score.pseudo}}</b>
-          </td>
-          <td>{{score.total_score}}</td>
-          <td>{{score.total_games}}</td>
-          <td>{{score.wins}}</td>
-          <td>{{score.losses}}</td>
-          <td>{{score.ties}}</td>
-        </tr>
-      </table>
-
+        </table>
+      </div>
       <div v-if="games.length ==0" class="lds-roller">
         <div></div>
         <div></div>
@@ -51,7 +52,7 @@
       <p v-if="games.length ==0" class="alert alert-secondary">Please wait while the magic happen...</p>
       <br />
       <br />
-      <div class="container2">
+      <div v-if="games.length >0" class="container2">
         <table class="table">
           <thead>
             <tr>
@@ -88,7 +89,7 @@
                     >View</span>
 
                     <span
-                      v-if=" game.status == 'Shoot!' || game.status == 'Place your Ships' || game.status == 'Waiting for player to join..' || game.status == 'Waiting for Opponent to Place ships..' "
+                      v-if=" game.status == 'Shoot!' || game.status == 'Place your Ships' || game.status == 'Waiting for player to join..' || game.status == 'Waiting for Opponent to Place ships..' ||game.status ==  'Waiting for opponent salvoes..' "
                       class="btn btn-info"
                       @click="goTo(game)"
                     >Re-join</span>
