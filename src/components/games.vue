@@ -84,10 +84,11 @@
               <span v-if="player">
                 <span v-for="(item, index) in game.players_ids" :key="index">
                   <span
-                    v-if="logged && player.id == item"
+                    v-if="logged && player.id == item && !game.status"
                     class="btn btn-info"
                     @click="goTo(game)"
                   >Re-join</span>
+                  <span v-if="game.status">Game Over</span>
                   <button
                     v-if="game.gamePlayers.length <2 && logged && player.id != item"
                     @click="join(game)"
