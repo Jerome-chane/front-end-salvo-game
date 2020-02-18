@@ -438,7 +438,7 @@ export default {
   },
   created() {
     this.$store.dispatch("getShips", this.gp_id).then(data => {
-      console.log("Response from GET SHIPS: ", data);
+      // console.log("Response from GET SHIPS: ", data);
       this.$store.dispatch("connectShips", this.gp_id);
     });
 

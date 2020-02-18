@@ -78,7 +78,7 @@ export default new Vuex.Store({
         () => {
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
           this.stompClient.subscribe(`/topic/games`, () => {
-            console.log("STORE GAME SOCKET RUN");
+            // console.log("STORE GAME SOCKET RUN");
             dispatch("getGames");
           });
         },
@@ -89,7 +89,7 @@ export default new Vuex.Store({
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
         // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
-        console.log("GAME SOCKET UPDATE");
+        // console.log("GAME SOCKET UPDATE");
         this.stompClient.send(`/app/games`, JSON.stringify(""), {});
       } else {
         // if connexion is not estsblished this will connect and send the message afterwards
@@ -105,7 +105,7 @@ export default new Vuex.Store({
         {},
 
         () => {
-          console.log("SOCKET RUN");
+          // console.log("SOCKET RUN");
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
           // if (getters.ships != null) {
           this.stompClient.subscribe(`/topic/${getters.gameId}`, () => {
@@ -120,7 +120,7 @@ export default new Vuex.Store({
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
         // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
-        console.log("STORE SHIP SOCKET UPDATE");
+        // console.log("STORE SHIP SOCKET UPDATE");
         this.stompClient.send(
           `/app/${payload.game_id}`,
           JSON.stringify(""),
@@ -133,13 +133,12 @@ export default new Vuex.Store({
     },
     //////////////////////////////////////////// //////////////////////////////////////////// //////////////////////////////////////////// ////////////////////////////////////////////
 
-    getGames({ commit, dispatch }) {
-      console.log("get Games Run");
+    getGames({ commit }) {
       fetch(`${api}/api/games`, { credentials: "include" })
         // fetch(`/api/games`, { credentials: "include" }) // use for local
         .then(data => data.json())
         .then(newData => {
-          console.log("newdata ", newData);
+          // console.log("newdata ", newData);
           commit("setData", newData);
           if (newData.player != null) {
             commit("syncLogged", true);
@@ -148,18 +147,6 @@ export default new Vuex.Store({
         })
         .catch(error => console.log(error));
     },
-    // Original GET SHIPS then
-
-    // .then(data => {
-    //   // console.log(data);
-    //   if (data.ok != true) {
-    //     commit("setAuthorized", false);
-    //     throw Error("UNAUTHORIZED ", data.status);
-    //   } else {
-    //     commit("setAuthorized", true);
-    //     return data.json();
-    //   }
-    // })
     getShips({ commit }, payload) {
       return new Promise((resolve, reject) => {
         return fetch(`${api}/api/game_view/${payload}`, {
@@ -178,7 +165,7 @@ export default new Vuex.Store({
           .then(shipData => {
             commit("setShipData", shipData); // save the fetched data in store variable
             commit("setGameId", shipData.game.game_id);
-            console.log("shipsdata", shipData);
+            // console.log("shipsdata", shipData);
             try {
               return resolve({ status: "ok" });
             } catch {
@@ -204,11 +191,10 @@ export default new Vuex.Store({
         body: getBody(ourData)
       })
         .then(data => {
-          // console.log("Request response: ", data);
           if (data.status == 200) {
             commit("syncLogged", true);
           }
-          console.log("Log status", getters.logged);
+          // console.log("Log status", getters.logged);
         })
         .then(newData => {
           dispatch("getGames");
@@ -280,7 +266,7 @@ export default new Vuex.Store({
             commit("syncPwd", ourData.password);
             commit("setLoginForm", false);
             dispatch("login");
-            console.log(data);
+            // console.log(data);
           }
         })
         .catch(error => {
@@ -368,8 +354,8 @@ export default new Vuex.Store({
           return newData.json();
         })
         .then(data => {
-          console.log(data);
-          console.log("ships added");
+          // console.log(data);
+          // console.log("ships added");
           dispatch("updateShipsSocket", payload); // update socket after ships are added
           dispatch("getShips", payload.id); // fetch the new ships data
         })
@@ -395,7 +381,7 @@ export default new Vuex.Store({
           return newData.json();
         })
         .then(data => {
-          console.log(data);
+          // console.log(data);
           dispatch("updateShipsSocket", payload);
           // dispatch("getShips", payload.id);
         })
