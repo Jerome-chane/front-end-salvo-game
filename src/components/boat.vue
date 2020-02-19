@@ -214,12 +214,12 @@ export default {
 .titanic_horizontal {
   background-color: rgb(113, 59, 201);
   height: 40px !important;
-  width: 240px !important;
+  width: 200px !important;
   z-index: 1 !important;
 }
 .titanic_vertical {
   background-color: rgb(113, 59, 201);
-  height: 240px !important;
+  height: 200px !important;
   width: 40px !important;
   z-index: 1 !important;
 }

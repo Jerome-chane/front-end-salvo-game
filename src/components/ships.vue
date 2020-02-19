@@ -438,11 +438,8 @@ export default {
   },
   created() {
     this.$store.dispatch("getShips", this.gp_id).then(data => {
-      // console.log("Response from GET SHIPS: ", data);
       this.$store.dispatch("connectShips", this.gp_id);
     });
-
-    // this.$store.dispatch("connectShips", this.gp_id);
   },
   beforeDestroy() {
     if (this.stompClient) {

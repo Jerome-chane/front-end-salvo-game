@@ -48,7 +48,6 @@ export default new Vuex.Store({
       state.player = payload.player;
       state.games = payload.games;
     },
-
     setGameId: (state, payload) => (state.gameId = payload),
     setShipData: (state, payload) => (state.ships = payload),
     reset: state => (state.ships = null),
@@ -107,11 +106,9 @@ export default new Vuex.Store({
         () => {
           // console.log("SOCKET RUN");
           // Once the connection is established the code below will automatically run each time data is sent to the back-end.
-          // if (getters.ships != null) {
           this.stompClient.subscribe(`/topic/${getters.gameId}`, () => {
             dispatch("getShips", payload); // When the back end sends a response this will fetch the data
           });
-          // }
         },
         error => console.log(error)
       );
@@ -120,7 +117,6 @@ export default new Vuex.Store({
       if (this.stompClient && this.stompClient.connected) {
         // check if the conexion has been established
         // Each time the player sends data (such as ships/or/salvoes) this code will run. This sends an empty string to the back end At the given game ID. The back end will send back an empty string. When the string is received we know that an upsate was made and a fetch will run to get the new data
-        // console.log("STORE SHIP SOCKET UPDATE");
         this.stompClient.send(
           `/app/${payload.game_id}`,
           JSON.stringify(""),
