@@ -9,7 +9,7 @@
   "dependencies": {
     "bootstrap": "^4.4.1",
     "core-js": "^3.4.3",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "popper.js": "^1.16.0",
     "sockjs": "^0.3.19",
     "sockjs-client": "^1.4.0",
